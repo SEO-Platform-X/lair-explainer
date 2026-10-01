@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How AI sees your business | Local AI Registry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;1,400;1,500&family=Bricolage+Grotesque:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Local AI Registry brand system, Rebrand 2026 */
+  :root {
+    --brand: #1F4FE0; --tint: #E7EDFC; --ink: #0B1A2E; --ink-soft: #4a5a72; --coral: #FF5A3C;
+    --paper: #F4F1EA; --paper-deep: #ECE6D6; --white: #ffffff; --line: #d8d2c3; --good: #1f8a4c; --good-soft: #dff2e6;
+    --serif: "Cormorant", Georgia, "Times New Roman", serif;
+    --label: "Bricolage Grotesque", "Hanken Grotesk", system-ui, sans-serif;
+    --text: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  :root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  html { height: 100%; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font-family: var(--text); -webkit-font-smoothing: antialiased; }
+  .app { height: 100%; max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; padding: 10px; }
+  .stage { position: relative; flex: 1 1 auto; min-height: 320px; background: var(--white); border-radius: 20px; overflow: hidden; touch-action: manipulation; border: 1px solid var(--line); cursor: pointer; }
+  #art { transition: opacity .35s ease; }
+  #art.fade { opacity: 0; }
+  .brandtag { position: absolute; left: 16px; top: 14px; display: inline-flex; align-items: center; gap: 8px; font-family: var(--label); font-weight: 700; font-size: 14px; color: var(--ink); pointer-events: none; }
+  .brandtag svg { width: 20px; height: 20px; }
+  .end { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; gap: 10px; justify-content: center; align-items: center; opacity: 0; animation: in .6s ease forwards; }
+  .end[hidden] { display: none; }
+  .hint { position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; font-size: 12px; color: var(--ink-soft); font-family: var(--text); opacity: 0; animation: hint 5s ease forwards; pointer-events: none; }
+  @keyframes hint { 10%,70% { opacity: .8; } 100% { opacity: 0; } }
+  /* in-frame titles */
+  svg .title { opacity: 0; animation: title .7s cubic-bezier(.2,.9,.3,1.1) forwards; animation-delay: .15s; }
+  svg .sub { opacity: 0; animation: title .7s ease forwards; animation-delay: .8s; }
+  .cardsvg { animation: cardOut .4s ease forwards; animation-delay: 2.8s; }
+  @keyframes cardOut { to { opacity: 0; transform: scale(1.03); } }
+  @keyframes title { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  #art, #art svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .bar { position: absolute; left: 0; right: 0; top: 0; height: 4px; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--brand); }
+.btn { font-family: var(--label); font-weight: 700; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; border-radius: 10px; padding: 12px 18px; border: 1.5px solid var(--ink); background: var(--white); color: var(--ink); cursor: pointer; min-height: 44px; text-decoration: none; display: inline-flex; align-items: center; }
+  .btn.cta { background: var(--coral); border-color: var(--coral); color: #fff; }
+  button:focus-visible, a:focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; }
+
+  svg text { font-family: var(--label); font-weight: 700; }
+  svg text.ser { font-family: var(--serif); font-weight: 500; }
+  svg text.ser.i { font-style: italic; }
+  svg text.txt { font-family: var(--text); font-weight: 600; }
+
+  .t { transform-box: fill-box; transform-origin: center; }
+  .in { opacity: 0; animation: in .6s cubic-bezier(.2,.9,.3,1.15) forwards; animation-delay: var(--d, 0s); }
+  @keyframes in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .pop { opacity: 0; animation: pop .55s cubic-bezier(.2,1.5,.4,1) forwards; animation-delay: var(--d, 0s); }
+  @keyframes pop { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: none; } }
+  .out { animation: out .4s ease forwards; animation-delay: var(--d, 0s); }
+  @keyframes out { to { opacity: 0; } }
+  .breathe { animation: breathe 3s ease-in-out infinite; }
+  @keyframes breathe { 50% { transform: translateY(-5px); } }
+  .bounce { animation: bounce .7s cubic-bezier(.2,1.6,.4,1) forwards; animation-delay: var(--d, 0s); }
+  @keyframes bounce { 0% { transform: none; } 40% { transform: scale(1.06) translateY(-10px); } 100% { transform: none; } }
+  .pupils { animation: look 4s ease-in-out infinite; animation-delay: var(--d, 0s); }
+  @keyframes look { 0%,100% { transform: translate(0,0); } 20% { transform: translate(-5px,-2px); } 45% { transform: translate(6px,1px); } 70% { transform: translate(-2px,4px); } }
+  .lids { transform-box: fill-box; transform-origin: center; animation: blink 3.6s linear infinite; animation-delay: 1s; }
+  @keyframes blink { 0%,94%,100% { transform: scaleY(0); } 97% { transform: scaleY(1); } }
+  .think { animation: think 1.2s ease-in-out infinite; }
+  @keyframes think { 50% { transform: translateY(-5px); } }
+  .shake { animation: shake .6s ease-in-out 2; animation-delay: var(--d, 0s); }
+  @keyframes shake { 25% { transform: translateX(-6px) rotate(-4deg); } 75% { transform: translateX(6px) rotate(4deg); } }
+  .toBlue { animation: toBlue .8s ease forwards; }
+  @keyframes toBlue { to { fill: #1F4FE0; } }
+
+  /* pieces */
+  .fly { transform-box: fill-box; transform-origin: center; }
+  .explode .fly { animation: explode .9s cubic-bezier(.2,.8,.3,1) forwards; animation-delay: calc(1.6s + var(--d)); }
+  @keyframes explode { to { transform: translate(var(--x), var(--y)) rotate(var(--r)); } }
+  .explode .fly.lost { animation: explode .9s cubic-bezier(.2,.8,.3,1) forwards, fade .7s ease forwards; animation-delay: calc(1.6s + var(--d)), calc(3.1s + var(--d)); }
+  @keyframes fade { to { opacity: .12; } }
+  .explode .drift, .scattered .drift { animation: drift 3.2s ease-in-out infinite; animation-delay: calc(2.5s + var(--d)); }
+  @keyframes drift { 50% { transform: translateY(-7px); } }
+  .explode .slot { opacity: 0; animation: slotIn .5s ease forwards; animation-delay: calc(3.4s + var(--d)); }
+  @keyframes slotIn { to { opacity: 1; } }
+  .scattered .fly { transform: translate(var(--x), var(--y)) rotate(var(--r)); }
+  .scattered .lost { opacity: .12; }
+
+  .assemble .fly { transform: translate(var(--x), var(--y)) rotate(var(--r)); animation: home .8s cubic-bezier(.2,1.2,.3,1) forwards; animation-delay: calc(1.0s + var(--d)); }
+  @keyframes home { to { transform: none; } }
+  .assemble .fly.lost { transform: none; opacity: 0; animation: lostIn .6s cubic-bezier(.2,1.5,.4,1) forwards; animation-delay: calc(2.8s + var(--d)); }
+  @keyframes lostIn { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: none; } }
+  .assemble .slot { animation: out .3s ease forwards; animation-delay: 3.5s; }
+  .frame { stroke-dasharray: 1400; stroke-dashoffset: 1400; animation: draw 1s ease forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .stamp { animation: stamp .45s cubic-bezier(.2,1.6,.4,1) forwards; animation-delay: var(--d, 0s); opacity: 0; }
+  @keyframes stamp { from { opacity: 0; transform: scale(2) rotate(-14deg); } to { opacity: 1; transform: rotate(-7deg); } }
+  .glow { animation: glow 1.2s ease-out forwards; animation-delay: var(--d, 0s); opacity: 0; }
+  @keyframes glow { 0% { opacity: 0; transform: scale(.6); } 40% { opacity: .35; } 100% { opacity: 0; transform: scale(1.8); } }
+
+  /* endless work scene */
+  .card { opacity: 0; animation: cardIn .45s cubic-bezier(.2,1.3,.4,1) forwards; animation-delay: var(--d); }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(-40px) rotate(var(--r)); } to { opacity: 1; transform: rotate(var(--r)); } }
+  .hand { opacity: 0; animation: hand 5s ease-in-out forwards; animation-delay: 1.4s; }
+  @keyframes hand { 0% { opacity: 0; transform: translate(80px,330px); } 8% { opacity: 1; } 20% { transform: translate(140px,120px); } 35% { transform: translate(470px,110px); } 50% { transform: translate(90px,250px); } 65% { transform: translate(500px,290px); } 80% { transform: translate(300px,180px); } 100% { opacity: 1; transform: translate(300px,180px); } }
+  .tired { animation: tired 1s ease-in-out infinite; animation-delay: 6.4s; }
+  @keyframes tired { 50% { transform: translateY(6px) scaleY(.9); } }
+
+  /* claim scene */
+  .tap { opacity: 0; animation: tap 1.2s ease-in-out forwards; animation-delay: var(--d); }
+  @keyframes tap { 0% { opacity: 0; transform: translate(560px,360px); } 30% { opacity: 1; transform: translate(360px,192px); } 55% { transform: translate(360px,192px) scale(.7); } 70% { transform: translate(360px,192px) scale(1); } 100% { opacity: 0; transform: translate(360px,192px); } }
+  .tick { opacity: 0; animation: pop .4s cubic-bezier(.2,1.6,.4,1) forwards; animation-delay: var(--d); }
+
+  /* velocity scene */
+  .dot { opacity: 0; animation: flow var(--sp) linear infinite; animation-delay: var(--d); }
+  @keyframes flow { 0% { opacity: 0; transform: translateX(0); } 10% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; transform: translateX(240px); } }
+  .meter { transition: width 1.6s cubic-bezier(.2,.8,.3,1); }
+  .pill { transition: fill .3s, stroke .3s; }
+  .pilltext { transition: fill .3s; }
+
+  @media (prefers-reduced-motion: reduce) { #art * { animation-duration: .01s !important; animation-iteration-count: 1 !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="stage" id="stage">
+    <div id="art"></div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="brandtag"><!-- swap for /brand/assets/lair-mark-color.svg --><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 22 L12 2 L21 22 L16.6 22 L12 11.6 L7.4 22 Z" fill="#1F4FE0"/><path d="M9.3 8 L12 2 L14.7 8 Z" fill="#FF5A3C"/></svg>Local AI Registry</div>
+    <div class="end" id="end" hidden>
+      <a class="btn cta" href="https://localairegistry.com" target="_blank" rel="noopener">Claim your record free</a>
+      <button class="btn" id="replay">Replay</button>
+    </div>
+    <div class="hint" id="hint">Tap right to skip ahead, left to go back</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var INK = '#0B1A2E', BRAND = '#1F4FE0', SOFT = '#E7EDFC', LINE = '#d8d2c3', GOOD = '#1f8a4c', GOODSOFT = '#dff2e6', MUTED = '#4a5a72', GREY = '#aeb6c6', CORAL = '#FF5A3C', PAPER = '#F4F1EA', DEEP = '#ECE6D6';
+
+  var COPY = [
+    { t: 'People ask AI. It gives one name.', x: 'Right now, that name is not yours.' },
+    { t: 'AI only has pieces of you.', x: 'Missing or wrong, it skips you.' },
+    { t: 'You could fix it yourself.', x: 'Hundreds of sites. Every week. Forever.' },
+    { t: 'Or put yourself on the record.', x: 'One page. Claim it. Confirm it. Yours.' },
+    { t: 'The more AI knows you, the more it says your name.', x: 'Each plan teaches it faster.' },
+    { t: 'Be the name AI says.', x: 'Your record is live. Claim it free.' }
+  ];
+  var CARD = 3.2, DUR = [6.5, 8, 8.5, 10.5, 11, 7.5].map(function (d) { return d + CARD; });
+
+  function shop() {
+    return '<g>' +
+      /* wall and base */
+      '<rect x="20" y="66" width="260" height="154" rx="6" fill="' + PAPER + '"/>' +
+      '<rect x="20" y="66" width="260" height="154" rx="6" fill="none" stroke="' + INK + '" stroke-width="3"/>' +
+      '<rect x="8" y="218" width="284" height="8" rx="4" fill="' + INK + '"/>' +
+      /* awning */
+      '<path d="M8 72 L292 72 L272 36 L28 36 Z" fill="' + BRAND + '" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/>' +
+      '<g fill="' + PAPER + '"><path d="M70 36 L58 72 L96 72 L106 36 Z"/><path d="M142 36 L132 72 L170 72 L178 36 Z"/><path d="M214 36 L204 72 L242 72 L250 36 Z"/></g>' +
+      '<path d="M8 72 Q20 84 32 72 Q44 84 56 72 Q68 84 80 72 Q92 84 104 72 Q116 84 128 72 Q140 84 152 72 Q164 84 176 72 Q188 84 200 72 Q212 84 224 72 Q236 84 248 72 Q260 84 272 72 Q284 84 292 72" fill="' + BRAND + '" stroke="' + INK + '" stroke-width="3"/>' +
+      /* sign */
+      '<rect x="78" y="8" width="144" height="26" rx="4" fill="' + INK + '"/>' +
+      '<text x="150" y="27" text-anchor="middle" font-size="13" fill="' + PAPER + '" textLength="124" lengthAdjust="spacingAndGlyphs">SUNRISE OPTICAL</text>' +
+      /* door */
+      '<rect x="44" y="110" width="58" height="108" rx="4" fill="' + SOFT + '" stroke="' + INK + '" stroke-width="3"/>' +
+      '<rect x="56" y="122" width="34" height="56" rx="3" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="2"/>' +
+      '<circle cx="92" cy="170" r="3.5" fill="' + INK + '"/>' +
+      /* window with glasses */
+      '<rect x="126" y="108" width="132" height="76" rx="4" fill="' + SOFT + '" stroke="' + INK + '" stroke-width="3"/>' +
+      '<g fill="none" stroke="' + INK + '" stroke-width="4" stroke-linecap="round"><circle cx="172" cy="148" r="15"/><circle cx="212" cy="148" r="15"/><path d="M187 146 Q192 141 197 146 M157 144 L146 136 M227 144 L238 136"/></g>' +
+      '<rect x="126" y="194" width="132" height="12" rx="3" fill="' + DEEP + '" stroke="' + INK + '" stroke-width="3"/>' +
+      /* planters */
+      '<g fill="' + BRAND + '" stroke="' + INK + '" stroke-width="3"><rect x="14" y="196" width="22" height="22" rx="3"/><rect x="264" y="196" width="22" height="22" rx="3"/></g>' +
+      '<g fill="' + GOOD + '" stroke="' + INK + '" stroke-width="3"><circle cx="25" cy="186" r="13"/><circle cx="275" cy="186" r="13"/></g>' +
+      '</g>';
+  }
+  var P = [[-150, -40, -14, 0], [10, -30, 6, .25], [160, -50, 12, .4], [-180, 60, 9, .55], [0, -6, -4, .7], [190, 40, -11, .85], [-140, 120, -8, 1.0], [40, 140, 10, 1.15], [120, 110, 7, .5]];
+  var LOST = { 1: 1, 8: 1 };
+  function pieces(prefix) {
+    var defs = '', body = '', i;
+    for (i = 0; i < 9; i++) {
+      var cx = (i % 3) * 100, cy = Math.floor(i / 3) * 80, p = P[i];
+      defs += '<clipPath id="' + prefix + i + '"><rect x="' + cx + '" y="' + cy + '" width="100" height="80"/></clipPath>';
+      if (LOST[i]) body += '<rect class="slot" x="' + cx + '" y="' + cy + '" width="100" height="80" fill="none" stroke="' + LINE + '" stroke-width="2" stroke-dasharray="6 6" style="--d:' + p[3] + 's"/>';
+      body += '<g class="fly' + (LOST[i] ? ' lost' : '') + '" style="--x:' + p[0] + 'px;--y:' + p[1] + 'px;--r:' + p[2] + 'deg;--d:' + p[3] + 's"><g class="t drift" style="--d:' + p[3] + 's"><g clip-path="url(#' + prefix + i + ')">' + shop() + '</g></g></g>';
+    }
+    return { defs: defs, body: body };
+  }
+  function face(x, y, r, color) {
+    var e = r * 0.2, px = r * 0.36;
+    return '<g transform="translate(' + x + ' ' + y + ')">' +
+      '<circle class="body" r="' + r + '" fill="' + color + '"/>' +
+      '<g class="t pupils"><circle cx="' + (-px) + '" cy="' + (-e * 0.4) + '" r="' + e + '" fill="#fff"/><circle cx="' + px + '" cy="' + (-e * 0.4) + '" r="' + e + '" fill="#fff"/>' +
+      '<circle cx="' + (-px + e * 0.25) + '" cy="' + (-e * 0.3) + '" r="' + (e * 0.5) + '" fill="' + INK + '"/><circle cx="' + (px + e * 0.25) + '" cy="' + (-e * 0.3) + '" r="' + (e * 0.5) + '" fill="' + INK + '"/></g>' +
+      '<rect class="lids body" x="' + (-r) + '" y="' + (-e * 1.6) + '" width="' + (2 * r) + '" height="' + (e * 2.4) + '" fill="' + color + '"/>' +
+      '</g>';
+  }
+  /* a label box that always fits its text: width from character count */
+  /* a label box; width is measured from the rendered text after mount (see fitBoxes) */
+  function box(x, y, text, fs, fill, stroke, color, id, cls) {
+    var h = Math.ceil(fs * 2.1), rx = Math.min(h / 2, 14), pad = Math.round(fs * 1.1);
+    return '<g class="box" data-cx="' + x + '" data-cy="' + y + '" data-pad="' + pad + '" data-text="' + text.replace(/"/g, '&quot;') + '"' + (id ? ' data-typed="1"' : '') + '>' +
+      '<rect width="10" height="' + h + '" rx="' + rx + '" fill="' + fill + '"' + (stroke ? ' stroke="' + stroke + '" stroke-width="2.5"' : '') + '/>' +
+      '<text' + (id ? ' id="' + id + '"' : '') + (cls ? ' class="' + cls + '"' : '') + ' x="5" y="' + (h / 2 + fs * 0.34) + '" text-anchor="middle" font-size="' + fs + '" fill="' + color + '">' + text + '</text></g>';
+  }
+  function fitBoxes() {
+    Array.prototype.forEach.call(document.querySelectorAll('#art .box'), function (g) {
+      var t = g.querySelector('text'), r = g.querySelector('rect');
+      var full = g.getAttribute('data-text'), was = t.textContent;
+      t.textContent = full;
+      var w = Math.ceil(t.getBBox().width * 1.06 + g.getAttribute('data-pad') * 2), h = +r.getAttribute('height');
+      r.setAttribute('width', w); t.setAttribute('x', w / 2);
+      g.setAttribute('transform', 'translate(' + (g.getAttribute('data-cx') - w / 2) + ' ' + (g.getAttribute('data-cy') - h / 2) + ')');
+      if (g.getAttribute('data-typed')) t.textContent = was === full ? full : was;
+    });
+  }
+
+  /* 1: the question, AI names someone else */
+  function s1() {
+    return '<svg viewBox="0 0 600 400">' +
+      '<g class="t in" style="--d:.1s">' + box(300, 150, 'best optician in Phoenix?', 36, SOFT, null, INK, 'q', 'ser i') + '<path d="M110 196 L94 226 L142 196 Z" fill="' + SOFT + '"/></g>' +
+      '<g class="t pop" style="--d:2.2s">' + face(300, 275, 34, INK) + '</g>' +
+      '<g class="out" style="--d:4.4s"><g class="t think"><g class="pop" style="--d:2.8s"><circle cx="276" cy="335" r="5" fill="' + MUTED + '"/><circle cx="300" cy="335" r="5" fill="' + MUTED + '"/><circle cx="324" cy="335" r="5" fill="' + MUTED + '"/></g></g></g>' +
+      '<g class="t in" style="--d:4.8s">' + box(300, 345, 'Vista Eye Care', 20, PAPER, LINE, INK, 'a1') + '</g>' +
+      '</svg>';
+  }
+  /* 2: shatter */
+  function s2() {
+    var pc = pieces('a');
+    return '<svg viewBox="0 0 600 400"><defs>' + pc.defs + '</defs>' +
+      '<g transform="translate(150 70)" class="explode"><g class="t in" style="--d:.1s">' + pc.body + '</g></g>' +
+      '<g class="t pop" style="--d:3.6s"><g class="t shake" style="--d:4.4s">' + face(300, 205, 32, INK) + '</g>' +
+      '<text x="300" y="262" text-anchor="middle" font-size="30" fill="' + INK + '">?</text></g>' +
+      '</svg>';
+  }
+  /* 3: endless work */
+  var SITES = ['Google', 'Yelp', 'Apple Maps', 'Bing', 'Healthgrades', 'RealSelf', 'Nextdoor', 'Yellow Pages', 'Foursquare', 'Facebook', 'Instagram', 'TikTok', 'BBB', 'Zocdoc', 'Trustpilot', 'MapQuest', 'Local news', 'Reddit', 'Groupon', 'Vitals', 'WebMD', 'Citysearch', 'Hotfrog', 'Manta'];
+  function s3() {
+    var pc = pieces('c'), cards = '', i;
+    for (i = 0; i < SITES.length; i++) {
+      var x = 30 + (i * 137) % 500, y = 112 + (i * 83) % 260, r = ((i * 37) % 21) - 10, d = 1.2 + i * 0.22;
+      cards += '<g class="t card" style="--d:' + d + 's;--r:' + r + 'deg">' + box(x + 50, y + 16, SITES[i], 13, PAPER, LINE, INK) + '</g>';
+    }
+    return '<svg viewBox="0 0 600 400"><defs>' + pc.defs + '</defs>' +
+      '<g transform="translate(150 70)" class="scattered" opacity=".55">' + pc.body + '</g>' + cards +
+      '<g class="t in" style="--d:1.0s">' + box(300, 34, 'SITES TO FIX', 13, INK, null, PAPER) + '<text id="cnt" x="300" y="82" text-anchor="middle" font-size="40" fill="' + INK + '">1</text></g>' +
+      '<g class="t hand"><g class="t tired"><circle r="13" fill="' + BRAND + '"/><circle r="22" fill="none" stroke="' + BRAND + '" stroke-width="2" opacity=".45"/></g></g>' +
+      '</svg>';
+  }
+  /* 4: registry gathers, you claim and confirm */
+  function s4() {
+    var pc = pieces('b');
+    var rows = ['Hours', 'Services', 'Known for'], list = '', i;
+    for (i = 0; i < rows.length; i++) {
+      var y = 100 + i * 46, d = 6.2 + i * 0.6;
+      list += '<g class="in" style="--d:' + d + 's"><rect x="150" y="' + y + '" width="300" height="36" rx="10" fill="' + SOFT + '"/>' +
+        '<text class="txt" x="172" y="' + (y + 24) + '" font-size="16" fill="' + INK + '">' + rows[i] + '</text>' +
+        '<g class="t tick" style="--d:' + (d + 0.5) + 's"><circle cx="426" cy="' + (y + 18) + '" r="11" fill="' + GOOD + '"/><path d="M420 ' + (y + 18) + ' l4 4 l8 -8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g></g>';
+    }
+    return '<svg viewBox="0 0 600 400"><defs>' + pc.defs + '</defs>' +
+      '<rect class="frame" x="118" y="40" width="364" height="300" rx="18" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="3"/>' +
+      '<circle class="t glow" style="--d:2.9s" cx="300" cy="110" r="26" fill="' + BRAND + '"/>' +
+      '<circle class="t glow" style="--d:3.2s" cx="400" cy="250" r="26" fill="' + BRAND + '"/>' +
+      '<g class="t out" style="--d:5.6s"><g transform="translate(150 70)" class="assemble">' + pc.body + '</g></g>' +
+      '<g class="t pop out" style="--d:4.2s;animation-delay:4.2s,5.6s">' + box(300, 192, 'CLAIM THIS BUSINESS', 15, CORAL, null, '#fff') + '</g>' +
+      '<g class="t tap" style="--d:4.6s"><circle r="12" fill="' + INK + '"/><circle r="20" fill="none" stroke="' + INK + '" stroke-width="2" opacity=".5"/></g>' +
+      '<g class="in" style="--d:5.9s"><text class="ser" x="300" y="82" text-anchor="middle" font-size="26" fill="' + INK + '">Is this right?</text></g>' + list +
+      '<g class="t stamp" style="--d:8.6s">' + box(300, 290, 'ON THE RECORD', 15, GOOD, null, '#fff') + '</g>' +
+      '</svg>';
+  }
+  /* 5: velocity by tier */
+  var TIERS = [['Free', 'You teach AI yourself'], ['Fix', 'We fix your listings'], ['Trust', 'Plus reviews and press'], ['Authority', 'Everything, every week']];
+  function s5() {
+    var dots = '', i;
+    for (i = 0; i < 12; i++) dots += '<circle class="dot" r="5" cx="170" cy="' + (148 + ((i * 7) % 5) * 7 - 14) + '" fill="' + BRAND + '" style="--d:' + (i * 0.33) + 's"/>';
+    var pills = '', w = 110;
+    for (i = 0; i < 4; i++) {
+      var x = 70 + i * 120;
+      pills += '<g class="in" style="--d:' + (0.6 + i * 0.12) + 's"><rect class="pill" id="p' + i + '" x="' + x + '" y="330" width="' + w + '" height="36" rx="10" fill="' + PAPER + '" stroke="' + LINE + '" stroke-width="2"/>' +
+        '<text class="pilltext" id="pt' + i + '" x="' + (x + w / 2) + '" y="353" text-anchor="middle" font-size="13" fill="' + MUTED + '" style="letter-spacing:.08em">' + TIERS[i][0].toUpperCase() + '</text></g>';
+    }
+    return '<svg viewBox="0 0 600 400">' +
+      '<g class="t in" style="--d:0s"><rect x="40" y="90" width="130" height="110" rx="12" fill="' + PAPER + '" stroke="' + INK + '" stroke-width="3"/><g transform="translate(55 104) scale(.33)">' + shop() + '</g>' +
+      '<text x="105" y="224" text-anchor="middle" font-size="12" fill="' + MUTED + '" style="letter-spacing:.08em">YOUR RECORD</text></g>' +
+      '<g id="stream">' + dots + '</g>' +
+      '<g class="t pop" style="--d:.5s">' + face(470, 145, 36, GREY) + '<text x="470" y="222" text-anchor="middle" font-size="13" fill="' + MUTED + '">AI</text></g>' +
+      '<g class="in" style="--d:.9s"><text class="ser i" x="300" y="264" text-anchor="middle" font-size="22" fill="' + INK + '">How well AI knows you</text>' +
+      '<rect x="120" y="276" width="360" height="14" rx="7" fill="' + DEEP + '"/><rect id="meter" class="meter" x="120" y="276" width="40" height="14" rx="7" fill="' + BRAND + '"/></g>' +
+      pills + '<text id="tcap" class="txt" x="300" y="392" text-anchor="middle" font-size="15" fill="' + INK + '"></text>' +
+      '</svg>';
+  }
+  /* 6: payoff */
+  function s6() {
+    return '<svg viewBox="0 0 600 400">' +
+      '<g class="t in" style="--d:0s"><g class="t breathe"><g class="t bounce" style="--d:3.2s"><g transform="translate(40 120) scale(.82)">' + shop() + '</g></g></g></g>' +
+      '<g class="t pop" style="--d:.8s">' + face(430, 150, 36, INK) + '</g>' +
+      '<g class="t in" style="--d:2.4s"><rect x="304" y="212" width="268" height="84" rx="16" fill="' + SOFT + '"/><path d="M372 212 L384 190 L404 212 Z" fill="' + SOFT + '"/>' +
+      '<text id="ans" class="ser" x="438" y="248" text-anchor="middle" font-size="26" fill="' + INK + '"></text>' +
+      '<text class="txt" x="438" y="276" text-anchor="middle" font-size="14" fill="' + MUTED + '">known for same-day lenses</text></g>' +
+      '<g class="t pop" style="--d:4.2s"><circle cx="556" cy="214" r="16" fill="' + CORAL + '"/><path d="M548 214 l5 5 l11 -11" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></g>' +
+      '</svg>';
+  }
+  function wrap(str, max) {
+    var words = str.split(' '), lines = [], cur = '';
+    words.forEach(function (w) { if ((cur + ' ' + w).trim().length > max) { lines.push(cur.trim()); cur = w; } else cur += ' ' + w; });
+    if (cur.trim()) lines.push(cur.trim());
+    return lines;
+  }
+  function card(i) {
+    var c = COPY[i], tl = wrap(c.t, 22), out = '', lh = 54, y = 300 - (tl.length * lh) / 2 + 10;
+    tl.forEach(function (l, k) { out += '<text class="ser title" style="animation-delay:' + (0.1 + k * 0.12) + 's" x="300" y="' + (y + k * lh) + '" text-anchor="middle" font-size="46" fill="' + INK + '">' + l + '</text>'; });
+    out += '<text class="txt sub" x="300" y="' + (y + tl.length * lh + 6) + '" text-anchor="middle" font-size="21" fill="' + MUTED + '">' + c.x + '</text>';
+    return '<svg viewBox="0 0 600 600" class="cardsvg"><rect width="600" height="600" fill="' + PAPER + '"/><rect x="286" y="' + (y - 86) + '" width="28" height="4" fill="' + CORAL + '" class="title" style="animation-delay:0s"/>' + out + '</svg>';
+  }
+  function framed(inner) {
+    var body = inner.replace(/^<svg viewBox="0 0 600 400">/, '').replace(/<\/svg>$/, '');
+    return '<svg viewBox="0 0 600 600"><rect width="600" height="600" fill="' + PAPER + '"/><g transform="translate(0 100)">' + body + '</g></svg>';
+  }
+  var SCENES = [s1, s2, s3, s4, s5, s6];
+
+  var cur = -1, t0 = 0, timers = [];
+  function later(ms, fn) { timers.push(setTimeout(fn, ms)); }
+  function typeInto(id, str, startMs, stepMs) {
+    later(startMs, function () { var el = $('#' + id), i = 0; if (!el) return; var h = setInterval(function () { i++; el.textContent = str.slice(0, i); if (i >= str.length) clearInterval(h); }, stepMs); timers.push(h); });
+  }
+  function setTier(k) {
+    var el = $('#stream'); if (!el) return;
+    var counts = [2, 5, 8, 12], speeds = [3.2, 2.2, 1.5, 1.0], widths = [60, 150, 250, 360], greens = [GREY, '#6f8ab8', '#3f66d6', BRAND];
+    Array.prototype.forEach.call(el.children, function (d, i) { d.style.display = i < counts[k] ? '' : 'none'; d.style.setProperty('--sp', speeds[k] + 's'); d.setAttribute('fill', k === 3 ? CORAL : BRAND); });
+    $('#meter').setAttribute('width', widths[k]);
+    Array.prototype.forEach.call(document.querySelectorAll('#art .body'), function (b) { b.setAttribute('fill', greens[k]); });
+    for (var i = 0; i < 4; i++) {
+      $('#p' + i).setAttribute('fill', i === k ? INK : PAPER); $('#p' + i).setAttribute('stroke', i === k ? INK : LINE);
+      $('#pt' + i).setAttribute('fill', i === k ? '#fff' : MUTED);
+    }
+    $('#tcap').textContent = TIERS[k][1];
+  }
+  function go(i) {
+    i = Math.max(0, Math.min(COPY.length - 1, i));
+    if (i === cur) return;
+    cur = i; t0 = performance.now();
+    timers.forEach(function (h) { clearTimeout(h); clearInterval(h); }); timers = [];
+    var art = $('#art'); art.classList.add('fade');
+    art.innerHTML = card(i);
+    requestAnimationFrame(function () { art.classList.remove('fade'); });
+    $('#end').hidden = true;
+    var M = CARD * 1000;
+    later(M, function () { art.innerHTML = framed(SCENES[i]()); fitBoxes(); });
+    later(M + 400, fitBoxes);
+    if (i === COPY.length - 1) later(M + 4800, function () { $('#end').hidden = false; });
+    if (i === 0) { typeInto('q', 'best optician in Phoenix?', M + 500, 50); typeInto('a1', 'Vista Eye Care', M + 5100, 50); }
+    if (i === 2) later(M + 1200, function () { var n = 1, el = $('#cnt'); var h = setInterval(function () { n = n < 24 ? n + 1 : Math.round(n * 1.12); if (el) el.textContent = n > 300 ? '300+' : n; if (n > 300) clearInterval(h); }, 180); timers.push(h); });
+    if (i === 4) { later(M + 50, function () { setTier(0); }); later(M + 2400, function () { setTier(1); }); later(M + 4800, function () { setTier(2); }); later(M + 7200, function () { setTier(3); }); }
+    if (i === 5) { typeInto('ans', 'Sunrise Optical', M + 2600, 60); later(M + 2200, function () { Array.prototype.forEach.call(document.querySelectorAll('#art .body'), function (b) { b.classList.add('toBlue'); }); }); }
+  }
+  function tick(now) {
+    var u = (now - t0) / 1000 / DUR[cur];
+    $('#bar').style.width = Math.min(1, u) * 100 + '%';
+    if (u >= 1 && cur < COPY.length - 1) go(cur + 1);
+    requestAnimationFrame(tick);
+  }
+  $('#replay').addEventListener('click', function (e) { e.stopPropagation(); cur = -1; go(0); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') go(cur + 1); if (e.key === 'ArrowLeft') go(cur - 1); });
+  var st = $('#stage'), sx = null;
+  st.addEventListener('pointerdown', function (e) { sx = e.clientX; });
+  st.addEventListener('pointerup', function (e) {
+    if (sx === null) return; var dx = e.clientX - sx; sx = null;
+    if (e.target.closest && e.target.closest('.end')) return;
+    var r = st.getBoundingClientRect();
+    if (Math.abs(dx) > 50) { go(dx < 0 ? cur + 1 : cur - 1); return; }
+    go(e.clientX - r.left > r.width / 2 ? cur + 1 : cur - 1);
+  });
+  function start() { go(0); requestAnimationFrame(tick); }
+  if (document.fonts && document.fonts.load) {
+    Promise.race([
+      Promise.all(['700 20px "Bricolage Grotesque"', '500 46px Cormorant', 'italic 500 36px Cormorant', '600 16px "Hanken Grotesk"', '500 21px "Hanken Grotesk"'].map(function (f) { return document.fonts.load(f); })),
+      new Promise(function (r) { setTimeout(r, 2500); })
+    ]).then(start, start);
+  } else start();
+})();
+</script>
+</body>
+</html>
