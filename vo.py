@@ -18,7 +18,27 @@ def trim(a, thr=0.01, keep=int(0.08 * 24000)):
     return a if len(idx) == 0 else a[max(0, idx[0] - keep): min(len(a), idx[-1] + keep)]
 
 EL_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
-EL_VOICE = os.environ.get("ELEVENLABS_VOICE_ID", "").strip() or "jBpfuIE2acCO8z3wKNLl"  # Jessica: bright, playful
+EL_VOICE = os.environ.get("ELEVENLABS_VOICE_ID", "").strip()
+if EL_KEY and not EL_VOICE:
+    # free plans can only use voices already in the account: list them and pick the most fun-sounding female
+    try:
+        req = urllib.request.Request("https://api.elevenlabs.io/v1/voices", headers={"xi-api-key": EL_KEY})
+        voices = json.loads(urllib.request.urlopen(req, timeout=60).read())["voices"]
+        def score(vv):
+            lab = {k: str(x).lower() for k, x in (vv.get("labels") or {}).items()}
+            d = (vv.get("description") or "").lower() + " " + " ".join(lab.values()) + " " + vv.get("name", "").lower()
+            s = 0
+            if "female" in lab.get("gender", "") or "female" in d: s += 10
+            for w, pts in (("playful", 6), ("fun", 6), ("bright", 4), ("upbeat", 5), ("energetic", 5), ("young", 3), ("cheerful", 5), ("lively", 4), ("warm", 2), ("casual", 2), ("conversational", 2), ("american", 2)):
+                if w in d: s += pts
+            if "british" in d: s -= 1
+            if vv.get("category") == "premade": s += 1
+            return s
+        voices.sort(key=score, reverse=True)
+        for vv in voices[:12]: print("voice option", vv["voice_id"], vv["name"], vv.get("category"), vv.get("labels"), (vv.get("description") or "")[:80])
+        EL_VOICE = voices[0]["voice_id"]; print("picked", voices[0]["name"])
+    except Exception as e:
+        print("voice list failed", repr(e)[:200]); EL_VOICE = "jBpfuIE2acCO8z3wKNLl"
 CB = None
 def chatterbox():
     global CB
@@ -65,7 +85,7 @@ def synth_inner(text, path, mp3):
             body = e.read().decode(errors="replace")[:400]
             print("ELEVENLABS ERROR", e.code, body)
             # retry once with the previous voice, then give up to Edge
-            if EL_VOICE != "nPczCjzI2devNBz1zQrb":
+            if False:
                 req2 = urllib.request.Request(
                     "https://api.elevenlabs.io/v1/text-to-speech/nPczCjzI2devNBz1zQrb?output_format=mp3_44100_128",
                     data=req.data, headers=dict(req.headers))
