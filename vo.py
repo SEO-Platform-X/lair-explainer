@@ -1,6 +1,6 @@
 import json, os, sys, subprocess, asyncio, urllib.request, urllib.error, numpy as np, soundfile as sf
 SCENES = [
-  ("People just ask AI now.", "And it gives them one name. Right now? Probably not yours."),
+  ("Today, people just ask AI.", "And it gives them one name. Right now? Probably not yours."),
   ("AI only has pieces of you.", "Scraps from all over the internet. Some are missing, some are wrong. So it skips you."),
   ("You could fix it yourself.", "Hundreds of sites. Every week. Forever."),
   ("Or, put yourself on the record.", "One page with every piece. Claim it, confirm it, done."),
