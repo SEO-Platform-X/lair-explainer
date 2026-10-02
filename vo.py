@@ -15,7 +15,7 @@ os.makedirs("vo", exist_ok=True)
 from kokoro import KPipeline
 pipe = KPipeline(lang_code="a", repo_id="hexgrad/Kokoro-82M")
 def synth(text, path):
-    audio = np.concatenate([np.asarray(a) for _, _, a in pipe(text, voice=VOICE, speed=1.0)])
+    audio = np.concatenate([np.asarray(a) for _, _, a in pipe(text, voice=VOICE, speed=0.95)])
     audio = np.concatenate([np.zeros(int(0.1 * 24000)), audio, np.zeros(int(0.2 * 24000))])
     sf.write(path, audio, 24000); return len(audio) / 24000
 from faster_whisper import WhisperModel

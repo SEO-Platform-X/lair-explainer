@@ -9,11 +9,18 @@ def place(path, at):
     if sr != SR:
         import math; idx = (np.arange(int(len(a) * SR / sr)) * sr / SR).astype(int); a = a[np.minimum(idx, len(a) - 1)]
     i = int(at * SR); e = min(len(vo), i + len(a)); vo[i:e] += a[: e - i]
-t = off
+# read the per-frame marker colour from the strip below the frame (one rgb pixel per frame at 30 fps)
+raw = np.frombuffer(open("strip.rgb", "rb").read(), dtype=np.uint8).reshape(-1, 3)
+starts = {}
+for f, (r, g, b) in enumerate(raw):
+    if r > 150: key = "end"
+    elif g > 10: key = int(round((g - 20) / 40))
+    else: continue
+    if key not in starts: starts[key] = f / 30.0
+print("scene starts", starts)
 for i in range(6):
-    place(f"vo/s{i}.wav", t + 0.25)
-    t += sched["cards"][i] + sched["anims"][i]
-place("vo/end.wav", t - sched["anims"][5] + 7.5 + 0.4 + 0.8)
+    place(f"vo/s{i}.wav", starts[i] + 0.25)
+place("vo/end.wav", starts["end"] + 0.9)
 vo = vo / (np.abs(vo).max() + 1e-9) * 0.85
 sf.write("vo.wav", vo, SR)
 subprocess.run(["python3", "music.py", str(dur)], check=True)

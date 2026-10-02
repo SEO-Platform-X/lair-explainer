@@ -18,7 +18,8 @@ jobs:
       - run: node record.js
       - run: |
           f=$(ls out/*.webm | head -1)
-          ffmpeg -y -i "$f" -vf "fps=30,format=yuv420p" -c:v libx264 -preset slow -crf 18 -movflags +faststart video.mp4
+          ffmpeg -y -i "$f" -vf "fps=30,crop=1920:1080:0:0,format=yuv420p" -c:v libx264 -preset slow -crf 18 -movflags +faststart video.mp4
+          ffmpeg -y -i "$f" -vf "fps=30,crop=1920:6:0:1083,scale=1:1:flags=area" -f rawvideo -pix_fmt rgb24 strip.rgb
       - run: python mix.py
       - run: cp video.mp4 lair-explainer-1080p-silent.mp4
       - uses: softprops/action-gh-release@v2

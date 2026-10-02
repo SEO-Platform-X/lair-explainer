@@ -3,7 +3,7 @@ const fs = require('fs');
 (async () => {
   const sched = JSON.parse(fs.readFileSync('schedule.json'));
   const browser = await chromium.launch();
-  const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 }, recordVideo: { dir: 'out', size: { width: 1920, height: 1080 } } });
+  const ctx = await browser.newContext({ viewport: { width: 1920, height: 1092 }, recordVideo: { dir: 'out', size: { width: 1920, height: 1092 } } });
   const t0 = Date.now();
   const page = await ctx.newPage();
   await page.addInitScript((s) => { window.__cards = s.cards; window.__anims = s.anims; }, sched);
