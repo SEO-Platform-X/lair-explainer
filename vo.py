@@ -1,4 +1,4 @@
-import json, os, sys, subprocess, asyncio, numpy as np, soundfile as sf
+import json, os, sys, subprocess, asyncio, urllib.request, urllib.error, numpy as np, soundfile as sf
 SCENES = [
   ("People just ask AI now.", "And it gives them one name. Right now? Probably not yours."),
   ("AI only has pieces of you.", "Scraps from all over the internet. Some are missing, some are wrong. So it skips you."),
@@ -29,6 +29,19 @@ def chatterbox():
     return CB
 def synth(text, path):
     mp3 = path + ".mp3"
+    try:
+        return synth_inner(text, path, mp3)
+    except Exception as e:
+        print("voice engine failed, using Edge Ava:", repr(e)[:200])
+        import edge_tts
+        asyncio.run(edge_tts.Communicate(text, "en-US-AvaMultilingualNeural", rate="+4%").save(mp3))
+        return finish(mp3, path)
+def finish(mp3, path):
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", mp3, "-ac", "1", "-ar", "24000", path], check=True)
+    a, sr = sf.read(path); a = trim(a)
+    a = np.concatenate([np.zeros(int(0.05 * 24000)), a, np.zeros(int(0.1 * 24000))])
+    sf.write(path, a, 24000); return len(a) / 24000
+def synth_inner(text, path, mp3):
     if not EL_KEY and os.environ.get("TTS", "chatterbox") == "chatterbox":
         import torch, torchaudio
         m = chatterbox(); torch.manual_seed(7)
@@ -46,14 +59,25 @@ def synth(text, path):
             data=_j.dumps({"text": text, "model_id": "eleven_multilingual_v2",
                            "voice_settings": {"stability": 0.38, "similarity_boost": 0.8, "style": 0.55, "use_speaker_boost": True}}).encode(),
             headers={"xi-api-key": EL_KEY, "Content-Type": "application/json", "Accept": "audio/mpeg"})
-        open(mp3, "wb").write(urllib.request.urlopen(req, timeout=120).read())
+        try:
+            open(mp3, "wb").write(urllib.request.urlopen(req, timeout=120).read())
+        except urllib.error.HTTPError as e:
+            body = e.read().decode(errors="replace")[:400]
+            print("ELEVENLABS ERROR", e.code, body)
+            # retry once with the previous voice, then give up to Edge
+            if EL_VOICE != "nPczCjzI2devNBz1zQrb":
+                req2 = urllib.request.Request(
+                    "https://api.elevenlabs.io/v1/text-to-speech/nPczCjzI2devNBz1zQrb?output_format=mp3_44100_128",
+                    data=req.data, headers=dict(req.headers))
+                try:
+                    open(mp3, "wb").write(urllib.request.urlopen(req2, timeout=120).read()); print("fell back to Brian")
+                except urllib.error.HTTPError as e2:
+                    print("ELEVENLABS ERROR (Brian)", e2.code, e2.read().decode(errors="replace")[:400]); raise
+            else: raise
     else:
         import edge_tts
         asyncio.run(edge_tts.Communicate(text, VOICE, rate=RATE).save(mp3))
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", mp3, "-ac", "1", "-ar", "24000", path], check=True)
-    a, sr = sf.read(path); a = trim(a)
-    a = np.concatenate([np.zeros(int(0.05 * 24000)), a, np.zeros(int(0.1 * 24000))])
-    sf.write(path, a, 24000); return len(a) / 24000
+    return finish(mp3, path)
 
 from faster_whisper import WhisperModel
 wm = WhisperModel("base.en", device="cpu", compute_type="int8")
