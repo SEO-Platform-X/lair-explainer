@@ -11,9 +11,14 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: '3.11' }
       - run: sudo apt-get update && sudo apt-get install -y ffmpeg
-      - run: pip install piper-tts numpy soundfile
-      - run: python -m piper.download_voices en_US-ryan-high --download-dir voices || true
-      - run: python vo.py
+      - run: pip install piper-tts numpy soundfile faster-whisper
+      - run: |
+          set -x
+          piper --help | head -40 || true
+          python -m piper.download_voices en_US-ryan-high --download-dir voices 2>&1 | tail -5 || true
+          ls -la voices || true
+      - run: python vo.py 2>&1 | tee vo.log
+      - run: python check.py | tee transcript.txt
       - run: npm i playwright@1.47.2 && npx playwright install --with-deps chromium
       - run: node record.js
       - run: |
@@ -28,3 +33,5 @@ jobs:
           files: |
             lair-explainer-1080p-audio.mp4
             lair-explainer-1080p-silent.mp4
+            transcript.txt
+            vo.log
