@@ -11,8 +11,7 @@ def place(path, at):
     i = int(at * SR); e = min(len(vo), i + len(a)); vo[i:e] += a[: e - i]
 t = off
 for i in range(6):
-    place(f"vo/c{i}.wav", t + 0.35)
-    place(f"vo/a{i}.wav", t + sched["cards"][i] + 0.7)
+    place(f"vo/s{i}.wav", t + 0.6)
     t += sched["cards"][i] + sched["anims"][i]
 place("vo/end.wav", t - sched["anims"][5] + 7.5 + 0.4 + 0.8)
 vo = vo / (np.abs(vo).max() + 1e-9) * 0.85
