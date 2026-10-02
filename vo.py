@@ -18,8 +18,12 @@ import re as _re
 def synth(text, path):
     parts = [p.strip() for p in _re.split(r'(?<=[.!?])\s+', text) if p.strip()]
     gap = np.zeros(int(0.14 * 24000)); pieces = []
+    def trim(a, thr=0.012, keep=int(0.06 * 24000)):
+        idx = np.where(np.abs(a) > thr)[0]
+        if len(idx) == 0: return a
+        return a[max(0, idx[0] - keep): min(len(a), idx[-1] + keep)]
     for p in parts:
-        pieces.append(np.concatenate([np.asarray(a) for _, _, a in pipe(p, voice=VOICE, speed=1.08)])); pieces.append(gap)
+        pieces.append(trim(np.concatenate([np.asarray(a) for _, _, a in pipe(p, voice=VOICE, speed=1.08)]))); pieces.append(gap)
     audio = np.concatenate(pieces[:-1])
     audio = np.concatenate([np.zeros(int(0.05 * 24000)), audio, np.zeros(int(0.1 * 24000))])
     sf.write(path, audio, 24000); return len(audio) / 24000

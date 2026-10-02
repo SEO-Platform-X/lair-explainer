@@ -13,7 +13,7 @@ const fs = require('fs');
   const offset = (Date.now() - t0) / 1000;
   await page.evaluate(() => window.startShow());
   await page.waitForSelector('body[data-done="1"]', { timeout: 200000 });
-  await page.waitForTimeout(5500);
+  await page.waitForTimeout(4200);
   await ctx.close(); await browser.close();
   fs.writeFileSync('offset.json', JSON.stringify({ offset }));
   console.log('offset', offset);
