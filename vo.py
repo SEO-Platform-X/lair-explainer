@@ -1,12 +1,12 @@
 import json, os, sys, numpy as np, soundfile as sf
 # Each scene: (words spoken while the title card is up, the rest). On-screen title = first part, said naturally.
 SCENES = [
-  ("These days, people just ask AI, and it gives them one name.", "Right now, that name probably isn't yours."),
+  ("These days, people just ask AI, and it gives them one name.", "Right now, that name probably isn't yours. Someone else gets the call."),
   ("Here's the thing. AI only has pieces of you.", "It's piecing your business together from scraps all over the internet. And when some are missing, or just wrong, it can't see the full picture. So it plays it safe, and recommends someone else."),
-  ("Sure, you could fix it yourself.", "But that's hundreds of sites. They change every week, and it never ends."),
-  ("Or, you put yourself on the record.", "Local AI Registry pulls every piece into one page. You claim it, make sure the facts are right, and it's yours."),
-  ("And the more AI knows you, the more it says your name.", "We keep teaching it from your record, and every plan turns that up."),
-  ("So next time someone asks, be the name AI says.", "Your record's already live. Claim it. It's free."),
+  ("Sure, you could fix it yourself.", "But that's hundreds of sites. Google, Yelp, the directories, a dozen more you've never heard of. They change every week, and it never ends."),
+  ("Or, you put yourself on the record.", "Local AI Registry pulls every piece into one page. You claim it, check the facts, your hours, your services, what you're known for, and it's yours."),
+  ("And the more AI knows you, the more it says your name.", "We keep teaching it from your record. Start free, and when you want to move faster, each plan turns that up."),
+  ("So next time someone asks, be the name AI says.", "Your record's already live, it's free, and it's waiting for you. Go claim it."),
 ]
 END = "Local A.I. Registry, dot com."
 MIN_ANIM = [6.0, 6.5, 7.5, 9.5, 9.5, 5.5]

@@ -18,5 +18,5 @@ vo = vo / (np.abs(vo).max() + 1e-9) * 0.85
 sf.write("vo.wav", vo, SR)
 subprocess.run(["python3", "music.py", str(dur)], check=True)
 subprocess.run(["ffmpeg", "-y", "-i", "video.mp4", "-i", "vo.wav", "-i", "music.wav",
-  "-filter_complex", "[2:a]volume=0.28[m];[1:a]volume=1.0[v];[v][m]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]",
+  "-filter_complex", "[2:a]volume=0.36[m];[1:a]volume=1.0[v];[v][m]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]",
   "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", "lair-explainer-1080p-audio.mp4"], check=True)
