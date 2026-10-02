@@ -7,7 +7,7 @@ LINES = [
   ("The more AI knows you, the more it says your name.", "We keep teaching AI from your record. Each plan teaches it faster."),
   ("Be the name AI says.", "The next customer who asks gets you. Your record is live. Claim it free."),
 ]
-END = "Local A I Registry dot com."
+END = "Local A.I. Registry, dot com."
 os.makedirs("vo", exist_ok=True); os.makedirs("voices", exist_ok=True)
 
 def fetch(name):
@@ -18,22 +18,26 @@ def fetch(name):
         if hits: return hits[0]
     return None
 
-model = fetch("en_US-ryan-high") or fetch("en_US-lessac-medium")
-if not model: sys.exit("no voice model downloaded")
-print("using", model)
-from piper import PiperVoice
-voice = PiperVoice.load(model)
+import numpy as np, soundfile as sf
+VOICE = os.environ.get("VOICE", "am_michael")
 try:
-    from piper import SynthesisConfig
-    cfg = SynthesisConfig(length_scale=1.08)
-except Exception:
-    cfg = None
-
-def synth(text, path):
-    with wave.open(path, "wb") as w:
-        if cfg is not None: voice.synthesize_wav(text, w, syn_config=cfg)
-        else: voice.synthesize_wav(text, w)
-    with wave.open(path) as w: return w.getnframes() / w.getframerate()
+    from kokoro import KPipeline
+    pipe = KPipeline(lang_code="a", repo_id="hexgrad/Kokoro-82M")
+    def synth(text, path):
+        chunks = [a for _, _, a in pipe(text, voice=VOICE, speed=0.93)]
+        audio = np.concatenate([np.asarray(c) for c in chunks])
+        audio = np.concatenate([np.zeros(int(0.15 * 24000)), audio, np.zeros(int(0.25 * 24000))])
+        sf.write(path, audio, 24000)
+        return len(audio) / 24000
+    print("using kokoro", VOICE)
+except Exception as e:
+    print("kokoro failed, falling back to piper:", repr(e))
+    model = fetch("en_US-ryan-high") or fetch("en_US-lessac-medium")
+    from piper import PiperVoice
+    voice = PiperVoice.load(model)
+    def synth(text, path):
+        with wave.open(path, "wb") as w: voice.synthesize_wav(text, w)
+        with wave.open(path) as w: return w.getnframes() / w.getframerate()
 
 sched = {"cards": [], "anims": []}
 base_anim = [6.5, 8, 8.5, 10.5, 11, 7.5]

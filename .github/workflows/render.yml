@@ -10,8 +10,8 @@ jobs:
         with: { node-version: 20 }
       - uses: actions/setup-python@v5
         with: { python-version: '3.11' }
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
-      - run: pip install piper-tts numpy soundfile faster-whisper
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng
+      - run: pip install kokoro soundfile numpy piper-tts faster-whisper
       - run: python vo.py 2>&1 | grep -v onnxruntime | tee vo.log
       - run: python check.py | tee transcript.txt
       - run: npm i playwright@1.47.2 && npx playwright install --with-deps chromium
