@@ -18,7 +18,7 @@ def trim(a, thr=0.01, keep=int(0.08 * 24000)):
     return a if len(idx) == 0 else a[max(0, idx[0] - keep): min(len(a), idx[-1] + keep)]
 
 EL_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
-EL_VOICE = os.environ.get("ELEVENLABS_VOICE_ID", "").strip() or "nPczCjzI2devNBz1zQrb"  # Brian: warm, upbeat narrator
+EL_VOICE = os.environ.get("ELEVENLABS_VOICE_ID", "").strip() or "jBpfuIE2acCO8z3wKNLl"  # Jessica: bright, playful
 CB = None
 def chatterbox():
     global CB
@@ -44,7 +44,7 @@ def synth(text, path):
         req = urllib.request.Request(
             "https://api.elevenlabs.io/v1/text-to-speech/" + EL_VOICE + "?output_format=mp3_44100_128",
             data=_j.dumps({"text": text, "model_id": "eleven_multilingual_v2",
-                           "voice_settings": {"stability": 0.45, "similarity_boost": 0.8, "style": 0.35, "use_speaker_boost": True}}).encode(),
+                           "voice_settings": {"stability": 0.38, "similarity_boost": 0.8, "style": 0.55, "use_speaker_boost": True}}).encode(),
             headers={"xi-api-key": EL_KEY, "Content-Type": "application/json", "Accept": "audio/mpeg"})
         open(mp3, "wb").write(urllib.request.urlopen(req, timeout=120).read())
     else:

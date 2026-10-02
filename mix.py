@@ -26,14 +26,20 @@ sf.write("vo.wav", vo, SR)
 # real track first (internal use), generated bed as fallback
 import urllib.request
 TRACKS = [
+  "https://assets.mixkit.co/music/preview/mixkit-feeling-happy-5.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-summer-fun-13.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-sun-and-his-daughter-580.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-games-worldbeat-466.mp3",
   "https://assets.mixkit.co/music/preview/mixkit-driving-ambition-32.mp3",
-  "https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3",
-  "https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3",
 ]
 got = False
+import os
+if os.path.exists("music.mp3"):
+    TRACKS = ["local:music.mp3"] + TRACKS
 for u in TRACKS:
     try:
-        urllib.request.urlretrieve(u, "track.mp3")
+        if u.startswith("local:"): subprocess.run(["cp", u[6:], "track.mp3"], check=True)
+        else: urllib.request.urlretrieve(u, "track.mp3")
         r = subprocess.run(["ffmpeg", "-y", "-v", "error", "-stream_loop", "3", "-i", "track.mp3", "-t", str(dur), "-af", f"afade=t=in:d=1,afade=t=out:st={max(0, dur - 3)}:d=3", "-ac", "2", "-ar", "44100", "music.wav"])
         if r.returncode == 0: print("music:", u); got = True; break
     except Exception as e: print("track failed", u, e)
