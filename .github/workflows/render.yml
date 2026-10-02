@@ -13,6 +13,9 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng
       - run: pip install edge-tts soundfile numpy faster-whisper
       - run: python vo.py 2>&1 | grep -v onnxruntime | tee vo.log
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ vars.ELEVENLABS_VOICE_ID }}
       - run: python check.py | tee transcript.txt
       - run: npm i playwright@1.47.2 && npx playwright install --with-deps chromium
       - run: node record.js

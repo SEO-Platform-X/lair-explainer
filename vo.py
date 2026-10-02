@@ -1,10 +1,10 @@
 import json, os, sys, subprocess, asyncio, numpy as np, soundfile as sf
 SCENES = [
   ("People just ask AI now.", "And it gives them one name. Right now? Probably not yours."),
-  ("AI only has pieces of you.", "Scraps from all over the internet. Some missing, some wrong. So it skips you."),
+  ("AI only has pieces of you.", "Scraps from all over the internet. Some are missing, some are wrong. So it skips you."),
   ("You could fix it yourself.", "Hundreds of sites. Every week. Forever."),
   ("Or, put yourself on the record.", "One page with every piece. Claim it, confirm it, done."),
-  ("And the more AI knows you, the more it says your name.", "We keep teaching it. Every plan turns it up."),
+  ("And the more AI knows you, the more it says your name.", "Turn it up, and AI recommends you more and more."),
   ("So next time someone asks, it's you.", "Your record's live. It's free. Go claim it."),
 ]
 END = "Be the name AI says."
@@ -17,10 +17,21 @@ def trim(a, thr=0.01, keep=int(0.08 * 24000)):
     idx = np.where(np.abs(a) > thr)[0]
     return a if len(idx) == 0 else a[max(0, idx[0] - keep): min(len(a), idx[-1] + keep)]
 
+EL_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
+EL_VOICE = os.environ.get("ELEVENLABS_VOICE_ID", "").strip() or "nPczCjzI2devNBz1zQrb"  # Brian: warm, upbeat narrator
 def synth(text, path):
-    import edge_tts
     mp3 = path + ".mp3"
-    asyncio.run(edge_tts.Communicate(text, VOICE, rate=RATE).save(mp3))
+    if EL_KEY:
+        import urllib.request, json as _j
+        req = urllib.request.Request(
+            "https://api.elevenlabs.io/v1/text-to-speech/" + EL_VOICE + "?output_format=mp3_44100_128",
+            data=_j.dumps({"text": text, "model_id": "eleven_multilingual_v2",
+                           "voice_settings": {"stability": 0.45, "similarity_boost": 0.8, "style": 0.35, "use_speaker_boost": True}}).encode(),
+            headers={"xi-api-key": EL_KEY, "Content-Type": "application/json", "Accept": "audio/mpeg"})
+        open(mp3, "wb").write(urllib.request.urlopen(req, timeout=120).read())
+    else:
+        import edge_tts
+        asyncio.run(edge_tts.Communicate(text, VOICE, rate=RATE).save(mp3))
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", mp3, "-ac", "1", "-ar", "24000", path], check=True)
     a, sr = sf.read(path); a = trim(a)
     a = np.concatenate([np.zeros(int(0.05 * 24000)), a, np.zeros(int(0.1 * 24000))])
@@ -33,7 +44,7 @@ def card_end(path, nwords):
     words = [w for s in segs for w in s.words]
     return words[nwords - 1].end if len(words) >= nwords else None
 
-print("voice", VOICE, RATE)
+print("voice", "elevenlabs:" + EL_VOICE if EL_KEY else VOICE + " " + RATE)
 sched = {"cards": [], "anims": [], "vo": []}
 for i, (card, rest) in enumerate(SCENES):
     d = synth(card + " " + rest, f"vo/s{i}.wav")

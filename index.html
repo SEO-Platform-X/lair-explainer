@@ -208,7 +208,6 @@
       '<circle class="body" r="' + r + '" fill="' + color + '"/>' +
       '<g class="t pupils"><circle cx="' + (-px) + '" cy="' + (-e * 0.4) + '" r="' + e + '" fill="#fff"/><circle cx="' + px + '" cy="' + (-e * 0.4) + '" r="' + e + '" fill="#fff"/>' +
       '<circle cx="' + (-px + e * 0.25) + '" cy="' + (-e * 0.3) + '" r="' + (e * 0.5) + '" fill="' + INK + '"/><circle cx="' + (px + e * 0.25) + '" cy="' + (-e * 0.3) + '" r="' + (e * 0.5) + '" fill="' + INK + '"/></g>' +
-      '<rect class="lids body" x="' + (-r) + '" y="' + (-e * 1.6) + '" width="' + (2 * r) + '" height="' + (e * 2.4) + '" fill="' + color + '"/>' +
       '</g>';
   }
   /* a label box that always fits its text: width from character count */
@@ -285,7 +284,7 @@
       '</svg>';
   }
   /* 5: velocity by tier */
-  var TIERS = [['Free', 'You teach AI yourself'], ['Fix', 'We fix your listings'], ['Trust', 'Plus reviews and press'], ['Authority', 'Everything, every week']];
+  var TIERS = [['Free', 'You teach AI yourself'], ['Fix', 'AI starts recommending you'], ['Trust', 'AI recommends you more'], ['Authority', 'AI recommends you the most']];
   function s5() {
     var dots = '', i;
     for (i = 0; i < 12; i++) dots += '<circle class="dot" r="5" cx="170" cy="' + (148 + ((i * 7) % 5) * 7 - 14) + '" fill="' + BRAND + '" style="--d:' + (i * 0.33) + 's"/>';
