@@ -18,13 +18,24 @@ jobs:
           ELEVENLABS_VOICE_ID: ${{ vars.ELEVENLABS_VOICE_ID }}
       - run: python check.py | tee transcript.txt
       - run: npm i playwright@1.47.2 && npx playwright install --with-deps chromium
-      - run: node record.js 2>&1 | tail -40
+      - run: node record.js 2>&1 | tee record.log | tail -40
       - run: |
           f=$(ls out/*.webm | head -1)
           ffmpeg -y -i "$f" -vf "fps=30,crop=1920:1080:0:0,format=yuv420p" -c:v libx264 -preset slow -crf 18 -movflags +faststart video.mp4
           ffmpeg -y -i "$f" -vf "fps=30,crop=1920:6:0:1083,scale=1:1:flags=area" -f rawvideo -pix_fmt rgb24 strip.rgb
       - run: python mix.py
       - run: cp video.mp4 lair-explainer-1080p-silent.mp4
+      - uses: softprops/action-gh-release@v2
+        if: failure()
+        with:
+          tag_name: fail-${{ github.run_number }}
+          name: Failed build ${{ github.run_number }} (diagnostics)
+          prerelease: true
+          files: |
+            record.log
+            vo.log
+            schedule.json
+            out/fail.png
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
