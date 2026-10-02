@@ -1,10 +1,20 @@
 const { chromium } = require('playwright');
+const fs = require('fs');
 (async () => {
+  const sched = JSON.parse(fs.readFileSync('schedule.json'));
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 }, recordVideo: { dir: 'out', size: { width: 1920, height: 1080 } } });
+  const t0 = Date.now();
   const page = await ctx.newPage();
+  await page.addInitScript((s) => { window.__cards = s.cards; window.__anims = s.anims; }, sched);
   await page.goto('file://' + process.cwd() + '/index.html?video=1', { waitUntil: 'networkidle' });
-  await page.waitForSelector('body[data-done="1"]', { timeout: 150000 });
-  await page.waitForTimeout(4500);
+  await page.waitForSelector('body[data-ready="1"]', { timeout: 60000 });
+  await page.waitForTimeout(800);
+  const offset = (Date.now() - t0) / 1000;
+  await page.evaluate(() => window.startShow());
+  await page.waitForSelector('body[data-done="1"]', { timeout: 200000 });
+  await page.waitForTimeout(5500);
   await ctx.close(); await browser.close();
+  fs.writeFileSync('offset.json', JSON.stringify({ offset }));
+  console.log('offset', offset);
 })();

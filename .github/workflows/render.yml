@@ -8,14 +8,23 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pip install piper-tts numpy soundfile
+      - run: python -m piper.download_voices en_US-ryan-high --download-dir voices || true
+      - run: python vo.py
       - run: npm i playwright@1.47.2 && npx playwright install --with-deps chromium
-      - run: sudo apt-get install -y ffmpeg
       - run: node record.js
       - run: |
           f=$(ls out/*.webm | head -1)
-          ffmpeg -y -i "$f" -vf "fps=30,format=yuv420p" -c:v libx264 -preset slow -crf 18 -movflags +faststart lair-explainer-1080p.mp4
+          ffmpeg -y -i "$f" -vf "fps=30,format=yuv420p" -c:v libx264 -preset slow -crf 18 -movflags +faststart video.mp4
+      - run: python mix.py
+      - run: cp video.mp4 lair-explainer-1080p-silent.mp4
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
           name: Explainer MP4 build ${{ github.run_number }}
-          files: lair-explainer-1080p.mp4
+          files: |
+            lair-explainer-1080p-audio.mp4
+            lair-explainer-1080p-silent.mp4

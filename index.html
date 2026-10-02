@@ -33,7 +33,7 @@
   /* in-frame titles */
   svg .title { opacity: 0; animation: title .7s cubic-bezier(.2,.9,.3,1.1) forwards; animation-delay: .15s; }
   svg .sub { opacity: 0; animation: title .7s ease forwards; animation-delay: .8s; }
-  .cardsvg { animation: cardOut .4s ease forwards; animation-delay: 2.8s; }
+  .cardsvg { animation: cardOut .4s ease forwards; animation-delay: var(--out, 2.8s); }
   @keyframes cardOut { to { opacity: 0; transform: scale(1.03); } }
   @keyframes title { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   #art, #art svg { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -154,7 +154,8 @@
     { t: 'The more AI knows you, the more it says your name.', x: 'Each plan teaches it faster.' },
     { t: 'Be the name AI says.', x: 'Your record is live. Claim it free.' }
   ];
-  var CARD = 3.2, DUR = [6.5, 8, 8.5, 10.5, 11, 7.5].map(function (d) { return d + CARD; });
+  var CARDS = window.__cards || [3.2, 3.2, 3.2, 3.2, 3.2, 3.2], ANIM = window.__anims || [6.5, 8, 8.5, 10.5, 11, 7.5];
+  var CARD = 3.2, DUR = ANIM.map(function (d, i) { return d + CARDS[i]; });
 
   function shop() {
     return '<g>' +
@@ -318,7 +319,7 @@
     var c = COPY[i], tl = wrap(c.t, 22), out = '', lh = 54, y = 300 - (tl.length * lh) / 2 + 10;
     tl.forEach(function (l, k) { out += '<text class="ser title" style="animation-delay:' + (0.1 + k * 0.12) + 's" x="300" y="' + (y + k * lh) + '" text-anchor="middle" font-size="46" fill="' + INK + '">' + l + '</text>'; });
     out += '<text class="txt sub" x="300" y="' + (y + tl.length * lh + 6) + '" text-anchor="middle" font-size="21" fill="' + MUTED + '">' + c.x + '</text>';
-    return '<svg viewBox="' + VB + '" class="cardsvg">' + BG + '<rect x="286" y="' + (y - 86) + '" width="28" height="4" fill="' + CORAL + '" class="title" style="animation-delay:0s"/>' + out + '</svg>';
+    return '<svg viewBox="' + VB + '" class="cardsvg" style="--out:' + (CARDS[i] - 0.4) + 's">' + BG + '<rect x="286" y="' + (y - 86) + '" width="28" height="4" fill="' + CORAL + '" class="title" style="animation-delay:0s"/>' + out + '</svg>';
   }
   function framed(inner) {
     var body = inner.replace(/^<svg viewBox="0 0 600 400">/, '').replace(/<\/svg>$/, '');
@@ -352,7 +353,7 @@
     art.innerHTML = card(i);
     requestAnimationFrame(function () { art.classList.remove('fade'); });
     $('#end').hidden = true;
-    var M = CARD * 1000;
+    var M = CARDS[i] * 1000; CARD = CARDS[i];
     later(M, function () { art.innerHTML = framed(SCENES[i]()); fitBoxes(); });
     later(M + 400, fitBoxes);
     if (i === COPY.length - 1) later(M + 4800, function () { $('#end').hidden = false; });
@@ -390,7 +391,10 @@
     go(e.clientX - r.left > r.width / 2 ? cur + 1 : cur - 1);
   });
   function start() { go(0); requestAnimationFrame(tick); }
-  if (document.fonts && document.fonts.load) {
+  window.startShow = start;
+  if (VIDEO) {
+    Promise.all(['700 20px "Bricolage Grotesque"', '500 46px Cormorant', 'italic 500 36px Cormorant', '600 16px "Hanken Grotesk"', '500 21px "Hanken Grotesk"'].map(function (f) { return document.fonts.load(f); })).then(function () { document.body.setAttribute('data-ready', '1'); });
+  } else if (document.fonts && document.fonts.load) {
     Promise.race([
       Promise.all(['700 20px "Bricolage Grotesque"', '500 46px Cormorant', 'italic 500 36px Cormorant', '600 16px "Hanken Grotesk"', '500 21px "Hanken Grotesk"'].map(function (f) { return document.fonts.load(f); })),
       new Promise(function (r) { setTimeout(r, 2500); })
