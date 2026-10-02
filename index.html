@@ -147,14 +147,14 @@
   var INK = '#0B1A2E', BRAND = '#1F4FE0', SOFT = '#E7EDFC', LINE = '#d8d2c3', GOOD = '#1f8a4c', GOODSOFT = '#dff2e6', MUTED = '#4a5a72', GREY = '#aeb6c6', CORAL = '#FF5A3C', PAPER = '#F4F1EA', DEEP = '#ECE6D6';
 
   var COPY = [
-    { t: 'People ask AI. It gives one name.', x: 'Right now, that name is not yours.' },
-    { t: 'AI only has pieces of you.', x: 'Missing or wrong, it skips you.' },
-    { t: 'You could fix it yourself.', x: 'Hundreds of sites. Every week. Forever.' },
-    { t: 'Or put yourself on the record.', x: 'One page. Claim it. Confirm it. Yours.' },
-    { t: 'The more AI knows you, the more it says your name.', x: 'Each plan teaches it faster.' },
-    { t: 'Be the name AI says.', x: 'Your record is live. Claim it free.' }
+    { t: 'People just ask AI. It gives them one name.', x: '' },
+    { t: 'AI only has pieces of you.', x: '' },
+    { t: 'You could fix it yourself.', x: '' },
+    { t: 'Or put yourself on the record.', x: '' },
+    { t: 'The more AI knows you, the more it says your name.', x: '' },
+    { t: 'Be the name AI says.', x: '' }
   ];
-  var CARDS = window.__cards || [3.2, 3.2, 3.2, 3.2, 3.2, 3.2], ANIM = window.__anims || [6.5, 8, 8.5, 10.5, 11, 7.5];
+  var CARDS = window.__cards || [3.4, 3.0, 3.0, 3.0, 3.6, 3.0], ANIM = window.__anims || [6.5, 8, 8.5, 10.5, 11, 7.5];
   var CARD = 3.2, DUR = ANIM.map(function (d, i) { return d + CARDS[i]; });
 
   function shop() {
@@ -318,7 +318,7 @@
   function card(i) {
     var c = COPY[i], tl = wrap(c.t, 22), out = '', lh = 54, y = 300 - (tl.length * lh) / 2 + 10;
     tl.forEach(function (l, k) { out += '<text class="ser title" style="animation-delay:' + (0.1 + k * 0.12) + 's" x="300" y="' + (y + k * lh) + '" text-anchor="middle" font-size="46" fill="' + INK + '">' + l + '</text>'; });
-    out += '<text class="txt sub" x="300" y="' + (y + tl.length * lh + 6) + '" text-anchor="middle" font-size="21" fill="' + MUTED + '">' + c.x + '</text>';
+    if (c.x) out += '<text class="txt sub" x="300" y="' + (y + tl.length * lh + 6) + '" text-anchor="middle" font-size="21" fill="' + MUTED + '">' + c.x + '</text>';
     return '<svg viewBox="' + VB + '" class="cardsvg" style="--out:' + (CARDS[i] - 0.4) + 's">' + BG + '<rect x="286" y="' + (y - 86) + '" width="28" height="4" fill="' + CORAL + '" class="title" style="animation-delay:0s"/>' + out + '</svg>';
   }
   function framed(inner) {
