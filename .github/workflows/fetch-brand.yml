@@ -1,0 +1,26 @@
+name: Fetch brand assets
+on: { workflow_dispatch: {} }
+permissions: { contents: write }
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p assets/brand && cd assets/brand
+          curl -sL https://localairegistry.com/brand -o brand.html
+          curl -sL https://localairegistry.com/brand/foundation -o foundation.html
+          # every asset the brand pages link to
+          grep -oE '(https?://[^"'"'"' )]+|/brand/[^"'"'"' )]+)\.(svg|png|jpg|jpeg|webp|zip|pdf|woff2?|ttf|otf)' brand.html foundation.html | sed 's/^[^:]*://' | sort -u > links.txt
+          while read l; do
+            case "$l" in /*) u="https://localairegistry.com$l";; *) u="$l";; esac
+            f=$(basename "$u"); echo "GET $u"; curl -sfL "$u" -o "$f" || echo "  failed"
+          done < links.txt
+          for n in lair-mark-color lair-mark-mono lair-mark-white lair-lockup-color lair-lockup-mono lair-lockup-white lair-mark lair-lockup; do
+            for ext in svg png; do curl -sfL "https://localairegistry.com/brand/assets/$n.$ext" -o "$n.$ext" && echo "got $n.$ext" || rm -f "$n.$ext"; done
+          done
+          ls -la
+      - run: |
+          git config user.name "brand-fetch" && git config user.email "bot@localairegistry.com"
+          git add assets/brand && git commit -m "Brand assets from localairegistry.com/brand [skip ci]" || echo "nothing new"
+          git push
