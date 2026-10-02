@@ -21,8 +21,8 @@
   *, *::before, *::after { box-sizing: border-box; }
   body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font-family: var(--text); -webkit-font-smoothing: antialiased; }
   .app { height: 100%; max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; padding: 10px; }
-  .stage { position: relative; flex: 1 1 auto; min-height: 320px; background: var(--white); border-radius: 20px; overflow: hidden; touch-action: manipulation; border: 1px solid var(--line); cursor: pointer; }
-  #art { transition: opacity .35s ease; }
+  .stage { position: relative; flex: 1 1 auto; min-height: 320px; background: var(--paper); border-radius: 20px; overflow: hidden; touch-action: manipulation; border: 1px solid var(--line); cursor: pointer; }
+  #art { transition: opacity .35s ease; background: var(--paper); }
   #art.fade { opacity: 0; }
   .brandtag { position: absolute; left: 16px; top: 14px; display: inline-flex; align-items: center; gap: 8px; font-family: var(--label); font-weight: 700; font-size: 14px; color: var(--ink); pointer-events: none; }
   .brandtag svg { width: 20px; height: 20px; }
@@ -156,7 +156,7 @@
     { t: 'You could fix it yourself.', x: '' },
     { t: 'Or put yourself on the record.', x: '' },
     { t: 'The more AI knows you,\nthe more it says your name.', x: '' },
-    { t: 'Be the name AI says.', x: '' }
+    { t: 'The next time someone asks,\nthe answer is you.', x: '' }
   ];
   var CARDS = window.__cards || [3.4, 3.0, 3.0, 3.0, 3.6, 3.0], ANIM = window.__anims || [6.5, 8, 8.5, 10.5, 11, 7.5];
   var CARD = 3.2, DUR = ANIM.map(function (d, i) { return d + CARDS[i]; });

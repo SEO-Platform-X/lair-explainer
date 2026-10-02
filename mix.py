@@ -20,7 +20,7 @@ for f, (r, g, b) in enumerate(raw):
 print("scene starts", starts)
 for i in range(6):
     place(f"vo/s{i}.wav", starts[i] + 0.25)
-place("vo/end.wav", starts["end"] + 0.9)
+place("vo/end.wav", starts["end"] + 1.1)
 vo = vo / (np.abs(vo).max() + 1e-9) * 0.85
 sf.write("vo.wav", vo, SR)
 subprocess.run(["python3", "music.py", str(dur)], check=True)

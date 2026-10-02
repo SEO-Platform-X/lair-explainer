@@ -5,17 +5,22 @@ SCENES = [
   ("Here's the thing. AI only has pieces of you.", "It's piecing your business together from scraps all over the internet. And when some are missing, or just wrong, it can't see the full picture. So it plays it safe, and recommends someone else."),
   ("Sure, you could fix it yourself.", "But that's hundreds of sites. Google, Yelp, the directories, a dozen more you've never heard of. They change every week, and it never ends."),
   ("Or, you put yourself on the record.", "Local AI Registry pulls every piece into one page. You claim it, check the facts, your hours, your services, what you're known for, and it's yours."),
-  ("And the more AI knows you, the more it says your name.", "We keep teaching it from your record. Start free, and when you want to move faster, each plan turns that up."),
-  ("So next time someone asks, be the name AI says.", "Your record's already live, it's free, and it's waiting for you. Go claim it."),
+  ("And the more AI knows you, the more it says your name.", "We keep teaching it from your record. Start free, and when you want AI recommending you more, each plan turns it up."),
+  ("So next time someone asks, the answer is you.", "Your record's already live, it's free, and it's waiting for you. Go claim it."),
 ]
-END = "Local A.I. Registry, dot com."
+END = "Be the name AI says."
 MIN_ANIM = [6.0, 6.5, 7.5, 9.5, 9.5, 5.5]
-VOICE = os.environ.get("VOICE", "af_heart")
+VOICE = os.environ.get("VOICE", "af_bella")
 os.makedirs("vo", exist_ok=True)
 from kokoro import KPipeline
 pipe = KPipeline(lang_code="a", repo_id="hexgrad/Kokoro-82M")
+import re as _re
 def synth(text, path):
-    audio = np.concatenate([np.asarray(a) for _, _, a in pipe(text, voice=VOICE, speed=0.95)])
+    parts = [p.strip() for p in _re.split(r'(?<=[.!?])\s+', text) if p.strip()]
+    gap = np.zeros(int(0.22 * 24000)); pieces = []
+    for p in parts:
+        pieces.append(np.concatenate([np.asarray(a) for _, _, a in pipe(p, voice=VOICE, speed=0.95)])); pieces.append(gap)
+    audio = np.concatenate(pieces[:-1])
     audio = np.concatenate([np.zeros(int(0.1 * 24000)), audio, np.zeros(int(0.2 * 24000))])
     sf.write(path, audio, 24000); return len(audio) / 24000
 from faster_whisper import WhisperModel
