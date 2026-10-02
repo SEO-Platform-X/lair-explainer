@@ -111,7 +111,7 @@
   /* velocity scene */
   .dot { opacity: 0; animation: flow var(--sp) linear infinite; animation-delay: var(--d); }
   @keyframes flow { 0% { opacity: 0; transform: translateX(0); } 10% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; transform: translateX(240px); } }
-  .meter { transition: width 1.6s cubic-bezier(.2,.8,.3,1); }
+  .meter { transition: width 1.1s cubic-bezier(.2,.8,.3,1); }
   .pill { transition: fill .3s, stroke .3s; }
   .pilltext { transition: fill .3s; }
 
@@ -147,16 +147,19 @@
 (function () {
   var $ = function (s) { return document.querySelector(s); };
   var VIDEO = /[?&]video=1/.test(location.search); if (VIDEO) document.body.classList.add('video');
+  var RATE = VIDEO ? 1.45 : 1; function V(ms) { return ms / RATE; }
+  function accel() { if (RATE === 1 || !document.getAnimations) return; document.getAnimations().forEach(function (a) { if (a.playbackRate !== RATE) a.playbackRate = RATE; }); }
+  if (RATE !== 1) setInterval(accel, 120);
   var VB = VIDEO ? '-183 28 967 544' : '0 0 600 600', BG = VIDEO ? '<rect x="-233" width="1067" height="600" fill="#F4F1EA"/>' : '<rect width="600" height="600" fill="#F4F1EA"/>';
   var INK = '#0B1A2E', BRAND = '#1F4FE0', SOFT = '#E7EDFC', LINE = '#d8d2c3', GOOD = '#1f8a4c', GOODSOFT = '#dff2e6', MUTED = '#4a5a72', GREY = '#aeb6c6', CORAL = '#FF5A3C', PAPER = '#F4F1EA', DEEP = '#ECE6D6';
 
   var COPY = [
-    { t: 'People just ask AI.\nIt gives them one name.', x: '' },
-    { t: 'AI only has pieces of you.', x: '' },
-    { t: 'You could fix it yourself.', x: '' },
-    { t: 'Or put yourself on the record.', x: '' },
+    { t: 'People just ask AI.', x: '' },
+    { t: 'AI only has\npieces of you.', x: '' },
+    { t: 'You could fix it\nyourself.', x: '' },
+    { t: 'Or put yourself\non the record.', x: '' },
     { t: 'The more AI knows you,\nthe more it says your name.', x: '' },
-    { t: 'The next time someone asks,\nthe answer is you.', x: '' }
+    { t: 'Next time someone asks,\nit\u2019s you.', x: '' }
   ];
   var CARDS = window.__cards || [3.4, 3.0, 3.0, 3.0, 3.6, 3.0], ANIM = window.__anims || [6.5, 8, 8.5, 10.5, 11, 7.5];
   var CARD = 3.2, DUR = ANIM.map(function (d, i) { return d + CARDS[i]; });
@@ -233,7 +236,7 @@
     return '<svg viewBox="0 0 600 400">' +
       '<g class="t in" style="--d:.1s">' + box(300, 150, 'best optician in Phoenix?', 36, SOFT, null, INK, 'q', 'ser i') + '<path d="M110 196 L94 226 L142 196 Z" fill="' + SOFT + '"/></g>' +
       '<g class="t pop" style="--d:2.2s">' + face(300, 275, 34, INK) + '</g>' +
-      '<g class="out" style="--d:4.4s"><g class="t think"><g class="pop" style="--d:2.8s"><circle cx="276" cy="335" r="5" fill="' + MUTED + '"/><circle cx="300" cy="335" r="5" fill="' + MUTED + '"/><circle cx="324" cy="335" r="5" fill="' + MUTED + '"/></g></g></g>' +
+      '<g class="out" style="--d:4.4s"><g class="t pop" style="--d:2.8s"><circle cx="276" cy="335" r="5" fill="' + MUTED + '"/><circle cx="300" cy="335" r="5" fill="' + MUTED + '"/><circle cx="324" cy="335" r="5" fill="' + MUTED + '"/></g></g>' +
       '<g class="t in" style="--d:4.8s">' + box(300, 345, 'Vista Eye Care', 20, PAPER, LINE, INK, 'a1') + '</g>' +
       '</svg>';
   }
@@ -324,7 +327,7 @@
     var c = COPY[i], tl = wrap(c.t, 22), out = '', lh = 54, y = 300 - (tl.length * lh) / 2 + 10;
     tl.forEach(function (l, k) { out += '<text class="ser title" style="animation-delay:' + (0.1 + k * 0.12) + 's" x="300" y="' + (y + k * lh) + '" text-anchor="middle" font-size="46" fill="' + INK + '">' + l + '</text>'; });
     if (c.x) out += '<text class="txt sub" x="300" y="' + (y + tl.length * lh + 6) + '" text-anchor="middle" font-size="21" fill="' + MUTED + '">' + c.x + '</text>';
-    return '<svg viewBox="' + VB + '" class="cardsvg" style="--out:' + (CARDS[i] - 0.4) + 's">' + BG + '<rect x="286" y="' + (y - 86) + '" width="28" height="4" fill="' + CORAL + '" class="title" style="animation-delay:0s"/>' + out + '</svg>';
+    return '<svg viewBox="' + VB + '" class="cardsvg" style="--out:' + ((CARDS[i] - 0.3) * RATE) + 's">' + BG + '<rect x="286" y="' + (y - 86) + '" width="28" height="4" fill="' + CORAL + '" class="title" style="animation-delay:0s"/>' + out + '</svg>';
   }
   function framed(inner) {
     var body = inner.replace(/^<svg viewBox="0 0 600 400">/, '').replace(/<\/svg>$/, '');
@@ -360,10 +363,11 @@
     requestAnimationFrame(function () { art.classList.remove('fade'); });
     $('#end').hidden = true;
     var M = CARDS[i] * 1000; CARD = CARDS[i];
-    later(M, function () { art.innerHTML = framed(SCENES[i]()); fitBoxes(); if (mb) mb.style.background = 'rgb(0,' + (20 + i * 40) + ',200)'; });
-    later(M + 400, fitBoxes);
-    if (i === COPY.length - 1) later(M + 4800, function () { $('#end').hidden = false; });
-    if (VIDEO && i === COPY.length - 1) later(M + 7500, function () {
+    accel();
+    later(M, function () { art.innerHTML = framed(SCENES[i]()); fitBoxes(); accel(); if (mb) mb.style.background = 'rgb(0,' + (20 + i * 40) + ',200)'; });
+    later(M + V(400), fitBoxes);
+    if (i === COPY.length - 1) later(M + V(4800), function () { $('#end').hidden = false; });
+    if (VIDEO && i === COPY.length - 1) later(M + V(7500), function () {
       art.classList.add('fade');
       later(400, function () {
         if (mb) mb.style.background = 'rgb(220,0,0)';
@@ -375,10 +379,10 @@
         art.classList.remove('fade'); document.body.setAttribute('data-done', '1');
       });
     });
-    if (i === 0) { typeInto('q', 'best optician in Phoenix?', M + 500, 50); typeInto('a1', 'Vista Eye Care', M + 5100, 50); }
-    if (i === 2) later(M + 1200, function () { var n = 1, el = $('#cnt'); var h = setInterval(function () { n = n < 24 ? n + 1 : Math.round(n * 1.12); if (el) el.textContent = n > 300 ? '300+' : n; if (n > 300) clearInterval(h); }, 180); timers.push(h); });
-    if (i === 4) { later(M + 50, function () { setTier(0); }); later(M + 2400, function () { setTier(1); }); later(M + 4800, function () { setTier(2); }); later(M + 7200, function () { setTier(3); }); }
-    if (i === 5) { typeInto('ans', 'Sunrise Optical', M + 2600, 60); later(M + 2200, function () { Array.prototype.forEach.call(document.querySelectorAll('#art .body'), function (b) { b.classList.add('toBlue'); }); }); }
+    if (i === 0) { typeInto('q', 'best optician in Phoenix?', M + V(500), V(50)); typeInto('a1', 'Vista Eye Care', M + V(5100), V(50)); }
+    if (i === 2) later(M + V(1200), function () { var n = 1, el = $('#cnt'); var h = setInterval(function () { n = n < 24 ? n + 1 : Math.round(n * 1.12); if (el) el.textContent = n > 300 ? '300+' : n; if (n > 300) clearInterval(h); }, V(180)); timers.push(h); });
+    if (i === 4) { later(M + 50, function () { setTier(0); }); later(M + V(2400), function () { setTier(1); }); later(M + V(4800), function () { setTier(2); }); later(M + V(7200), function () { setTier(3); }); }
+    if (i === 5) { typeInto('ans', 'Sunrise Optical', M + V(2600), V(60)); later(M + V(2200), function () { Array.prototype.forEach.call(document.querySelectorAll('#art .body'), function (b) { b.classList.add('toBlue'); }); }); }
   }
   function tick(now) {
     var u = (now - t0) / 1000 / DUR[cur];

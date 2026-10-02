@@ -1,27 +1,27 @@
 import json, os, sys, numpy as np, soundfile as sf
 # Each scene: (words spoken while the title card is up, the rest). On-screen title = first part, said naturally.
 SCENES = [
-  ("These days, people just ask AI, and it gives them one name.", "Right now, that name probably isn't yours. Someone else gets the call."),
-  ("Here's the thing. AI only has pieces of you.", "It's piecing your business together from scraps all over the internet. And when some are missing, or just wrong, it can't see the full picture. So it plays it safe, and recommends someone else."),
-  ("Sure, you could fix it yourself.", "But that's hundreds of sites. Google, Yelp, the directories, a dozen more you've never heard of. They change every week, and it never ends."),
-  ("Or, you put yourself on the record.", "Local AI Registry pulls every piece into one page. You claim it, check the facts, your hours, your services, what you're known for, and it's yours."),
-  ("And the more AI knows you, the more it says your name.", "We keep teaching it from your record. Start free, and when you want AI recommending you more, each plan turns it up."),
-  ("So next time someone asks, the answer is you.", "Your record's already live, it's free, and it's waiting for you. Go claim it."),
+  ("People just ask AI now.", "And it gives them one name. Right now? Probably not yours."),
+  ("AI only has pieces of you.", "Scraps from all over the internet. Some missing, some wrong. So it skips you."),
+  ("You could fix it yourself.", "Hundreds of sites. Every week. Forever."),
+  ("Or, put yourself on the record.", "One page with every piece. Claim it, confirm it, done."),
+  ("And the more AI knows you, the more it says your name.", "We keep teaching it. Every plan turns it up."),
+  ("So next time someone asks, it's you.", "Your record's live. It's free. Go claim it."),
 ]
 END = "Be the name AI says."
-MIN_ANIM = [6.0, 6.5, 7.5, 9.5, 9.5, 5.5]
-VOICE = os.environ.get("VOICE", "af_bella")
+MIN_ANIM = [4.3, 4.6, 5.3, 6.7, 6.7, 3.9]
+VOICE = os.environ.get("VOICE", "af_sarah")
 os.makedirs("vo", exist_ok=True)
 from kokoro import KPipeline
 pipe = KPipeline(lang_code="a", repo_id="hexgrad/Kokoro-82M")
 import re as _re
 def synth(text, path):
     parts = [p.strip() for p in _re.split(r'(?<=[.!?])\s+', text) if p.strip()]
-    gap = np.zeros(int(0.22 * 24000)); pieces = []
+    gap = np.zeros(int(0.14 * 24000)); pieces = []
     for p in parts:
-        pieces.append(np.concatenate([np.asarray(a) for _, _, a in pipe(p, voice=VOICE, speed=0.95)])); pieces.append(gap)
+        pieces.append(np.concatenate([np.asarray(a) for _, _, a in pipe(p, voice=VOICE, speed=1.08)])); pieces.append(gap)
     audio = np.concatenate(pieces[:-1])
-    audio = np.concatenate([np.zeros(int(0.1 * 24000)), audio, np.zeros(int(0.2 * 24000))])
+    audio = np.concatenate([np.zeros(int(0.05 * 24000)), audio, np.zeros(int(0.1 * 24000))])
     sf.write(path, audio, 24000); return len(audio) / 24000
 from faster_whisper import WhisperModel
 wm = WhisperModel("base.en", device="cpu", compute_type="int8")
@@ -36,8 +36,8 @@ for i, (card, rest) in enumerate(SCENES):
     n = len(card.split())
     ce = card_end(f"vo/s{i}.wav", n)
     if ce is None: ce = d * n / (n + len(rest.split()))
-    cdur = round(max(2.4, ce + 0.45), 2)
-    adur = round(max(MIN_ANIM[i], d - cdur + 1.0), 2)
+    cdur = round(max(1.8, ce + 0.35), 2)
+    adur = round(max(MIN_ANIM[i], d - cdur + 0.6), 2)
     print(i, "vo", round(d, 2), "card", cdur, "anim", adur)
     sched["cards"].append(cdur); sched["anims"].append(adur); sched["vo"].append(round(d, 2))
 sched["end"] = synth(END, "vo/end.wav")
