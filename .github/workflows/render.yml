@@ -1,0 +1,21 @@
+name: Render MP4
+on: { workflow_dispatch: {}, push: { branches: [main] } }
+permissions: { contents: write }
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm i playwright@1.47.2 && npx playwright install --with-deps chromium
+      - run: sudo apt-get install -y ffmpeg
+      - run: node record.js
+      - run: |
+          f=$(ls out/*.webm | head -1)
+          ffmpeg -y -i "$f" -vf "fps=30,format=yuv420p" -c:v libx264 -preset slow -crf 18 -movflags +faststart lair-explainer-1080p.mp4
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Explainer MP4 build ${{ github.run_number }}
+          files: lair-explainer-1080p.mp4

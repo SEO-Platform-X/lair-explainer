@@ -116,6 +116,13 @@
   .pilltext { transition: fill .3s; }
 
   @media (prefers-reduced-motion: reduce) { #art * { animation-duration: .01s !important; animation-iteration-count: 1 !important; } }
+  /* video mode (?video=1): full-bleed 16:9, no controls */
+  body.video { background: #F4F1EA; }
+  body.video .app { max-width: none; padding: 0; }
+  body.video .stage { border: 0; border-radius: 0; cursor: default; }
+  body.video .bar, body.video .hint, body.video .end { display: none !important; }
+  body.video .brandtag { left: 36px; top: 30px; font-size: 22px; }
+  body.video .brandtag svg { width: 30px; height: 30px; }
 </style>
 </head>
 <body>
@@ -135,6 +142,8 @@
 <script>
 (function () {
   var $ = function (s) { return document.querySelector(s); };
+  var VIDEO = /[?&]video=1/.test(location.search); if (VIDEO) document.body.classList.add('video');
+  var VB = VIDEO ? '-233 0 1067 600' : '0 0 600 600', BG = VIDEO ? '<rect x="-233" width="1067" height="600" fill="#F4F1EA"/>' : '<rect width="600" height="600" fill="#F4F1EA"/>';
   var INK = '#0B1A2E', BRAND = '#1F4FE0', SOFT = '#E7EDFC', LINE = '#d8d2c3', GOOD = '#1f8a4c', GOODSOFT = '#dff2e6', MUTED = '#4a5a72', GREY = '#aeb6c6', CORAL = '#FF5A3C', PAPER = '#F4F1EA', DEEP = '#ECE6D6';
 
   var COPY = [
@@ -309,11 +318,11 @@
     var c = COPY[i], tl = wrap(c.t, 22), out = '', lh = 54, y = 300 - (tl.length * lh) / 2 + 10;
     tl.forEach(function (l, k) { out += '<text class="ser title" style="animation-delay:' + (0.1 + k * 0.12) + 's" x="300" y="' + (y + k * lh) + '" text-anchor="middle" font-size="46" fill="' + INK + '">' + l + '</text>'; });
     out += '<text class="txt sub" x="300" y="' + (y + tl.length * lh + 6) + '" text-anchor="middle" font-size="21" fill="' + MUTED + '">' + c.x + '</text>';
-    return '<svg viewBox="0 0 600 600" class="cardsvg"><rect width="600" height="600" fill="' + PAPER + '"/><rect x="286" y="' + (y - 86) + '" width="28" height="4" fill="' + CORAL + '" class="title" style="animation-delay:0s"/>' + out + '</svg>';
+    return '<svg viewBox="' + VB + '" class="cardsvg">' + BG + '<rect x="286" y="' + (y - 86) + '" width="28" height="4" fill="' + CORAL + '" class="title" style="animation-delay:0s"/>' + out + '</svg>';
   }
   function framed(inner) {
     var body = inner.replace(/^<svg viewBox="0 0 600 400">/, '').replace(/<\/svg>$/, '');
-    return '<svg viewBox="0 0 600 600"><rect width="600" height="600" fill="' + PAPER + '"/><g transform="translate(0 100)">' + body + '</g></svg>';
+    return '<svg viewBox="' + VB + '">' + BG + '<g transform="translate(0 100)">' + body + '</g></svg>';
   }
   var SCENES = [s1, s2, s3, s4, s5, s6];
 
@@ -347,6 +356,17 @@
     later(M, function () { art.innerHTML = framed(SCENES[i]()); fitBoxes(); });
     later(M + 400, fitBoxes);
     if (i === COPY.length - 1) later(M + 4800, function () { $('#end').hidden = false; });
+    if (VIDEO && i === COPY.length - 1) later(M + 7500, function () {
+      art.classList.add('fade');
+      later(400, function () {
+        art.innerHTML = '<svg viewBox="' + VB + '">' + BG +
+          '<g transform="translate(300 240)" class="t pop"><path transform="translate(-40 -40) scale(3.4)" d="M3 22 L12 2 L21 22 L16.6 22 L12 11.6 L7.4 22 Z" fill="' + BRAND + '"/><path transform="translate(-40 -40) scale(3.4)" d="M9.3 8 L12 2 L14.7 8 Z" fill="' + CORAL + '"/></g>' +
+          '<text class="ser title" style="animation-delay:.3s" x="300" y="352" text-anchor="middle" font-size="44" fill="' + INK + '">Be the name AI says.</text>' +
+          '<text class="sub" style="animation-delay:.9s" x="300" y="402" text-anchor="middle" font-size="22" fill="' + BRAND + '" letter-spacing=".06em">localairegistry.com</text>' +
+          '<text class="txt sub" style="animation-delay:1.3s" x="300" y="440" text-anchor="middle" font-size="18" fill="' + MUTED + '">Claim your record free.</text></svg>';
+        art.classList.remove('fade'); document.body.setAttribute('data-done', '1');
+      });
+    });
     if (i === 0) { typeInto('q', 'best optician in Phoenix?', M + 500, 50); typeInto('a1', 'Vista Eye Care', M + 5100, 50); }
     if (i === 2) later(M + 1200, function () { var n = 1, el = $('#cnt'); var h = setInterval(function () { n = n < 24 ? n + 1 : Math.round(n * 1.12); if (el) el.textContent = n > 300 ? '300+' : n; if (n > 300) clearInterval(h); }, 180); timers.push(h); });
     if (i === 4) { later(M + 50, function () { setTier(0); }); later(M + 2400, function () { setTier(1); }); later(M + 4800, function () { setTier(2); }); later(M + 7200, function () { setTier(3); }); }
@@ -363,7 +383,7 @@
   var st = $('#stage'), sx = null;
   st.addEventListener('pointerdown', function (e) { sx = e.clientX; });
   st.addEventListener('pointerup', function (e) {
-    if (sx === null) return; var dx = e.clientX - sx; sx = null;
+    if (sx === null || VIDEO) return; var dx = e.clientX - sx; sx = null;
     if (e.target.closest && e.target.closest('.end')) return;
     var r = st.getBoundingClientRect();
     if (Math.abs(dx) > 50) { go(dx < 0 ? cur + 1 : cur - 1); return; }
