@@ -19,8 +19,26 @@ def trim(a, thr=0.01, keep=int(0.08 * 24000)):
 
 EL_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
 EL_VOICE = os.environ.get("ELEVENLABS_VOICE_ID", "").strip() or "nPczCjzI2devNBz1zQrb"  # Brian: warm, upbeat narrator
+CB = None
+def chatterbox():
+    global CB
+    if CB is None:
+        import torch; from chatterbox.tts import ChatterboxTTS
+        torch.set_num_threads(os.cpu_count() or 4)
+        CB = ChatterboxTTS.from_pretrained(device="cpu")
+    return CB
 def synth(text, path):
     mp3 = path + ".mp3"
+    if not EL_KEY and os.environ.get("TTS", "chatterbox") == "chatterbox":
+        import torch, torchaudio
+        m = chatterbox(); torch.manual_seed(7)
+        wav = m.generate(text, exaggeration=float(os.environ.get("EXAG", "0.55")), cfg_weight=0.45, temperature=0.7)
+        torchaudio.save(path, wav, m.sr)
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", path, "-ac", "1", "-ar", "24000", path + ".tmp.wav"], check=True)
+        os.replace(path + ".tmp.wav", path)
+        a, sr = sf.read(path); a = trim(a)
+        a = np.concatenate([np.zeros(int(0.05 * 24000)), a, np.zeros(int(0.1 * 24000))])
+        sf.write(path, a, 24000); return len(a) / 24000
     if EL_KEY:
         import urllib.request, json as _j
         req = urllib.request.Request(
@@ -44,7 +62,7 @@ def card_end(path, nwords):
     words = [w for s in segs for w in s.words]
     return words[nwords - 1].end if len(words) >= nwords else None
 
-print("voice", "elevenlabs:" + EL_VOICE if EL_KEY else VOICE + " " + RATE)
+print("voice", "elevenlabs:" + EL_VOICE if EL_KEY else ("chatterbox" if os.environ.get("TTS", "chatterbox") == "chatterbox" else VOICE + " " + RATE))
 sched = {"cards": [], "anims": [], "vo": []}
 for i, (card, rest) in enumerate(SCENES):
     d = synth(card + " " + rest, f"vo/s{i}.wav")
