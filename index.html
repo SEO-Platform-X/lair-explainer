@@ -403,7 +403,10 @@
   function start() { go(0); requestAnimationFrame(tick); }
   window.startShow = start;
   if (VIDEO) {
-    Promise.all(['700 20px "Bricolage Grotesque"', '500 46px Cormorant', 'italic 500 36px Cormorant', '600 16px "Hanken Grotesk"', '500 21px "Hanken Grotesk"'].map(function (f) { return document.fonts.load(f); })).then(function () { document.body.setAttribute('data-ready', '1'); });
+    Promise.race([
+      Promise.all(['700 20px "Bricolage Grotesque"', '500 46px Cormorant', 'italic 500 36px Cormorant', '600 16px "Hanken Grotesk"', '500 21px "Hanken Grotesk"'].map(function (f) { return document.fonts.load(f); })),
+      new Promise(function (r) { setTimeout(r, 8000); })
+    ]).then(function () { document.body.setAttribute('data-ready', '1'); }, function () { document.body.setAttribute('data-ready', '1'); });
   } else if (document.fonts && document.fonts.load) {
     Promise.race([
       Promise.all(['700 20px "Bricolage Grotesque"', '500 46px Cormorant', 'italic 500 36px Cormorant', '600 16px "Hanken Grotesk"', '500 21px "Hanken Grotesk"'].map(function (f) { return document.fonts.load(f); })),

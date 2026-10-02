@@ -18,7 +18,7 @@ jobs:
           ELEVENLABS_VOICE_ID: ${{ vars.ELEVENLABS_VOICE_ID }}
       - run: python check.py | tee transcript.txt
       - run: npm i playwright@1.47.2 && npx playwright install --with-deps chromium
-      - run: node record.js
+      - run: node record.js 2>&1 | tail -40
       - run: |
           f=$(ls out/*.webm | head -1)
           ffmpeg -y -i "$f" -vf "fps=30,crop=1920:1080:0:0,format=yuv420p" -c:v libx264 -preset slow -crf 18 -movflags +faststart video.mp4
