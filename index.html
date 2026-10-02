@@ -121,8 +121,8 @@
   body.video .app { max-width: none; padding: 0; }
   body.video .stage { border: 0; border-radius: 0; cursor: default; }
   body.video .bar, body.video .hint, body.video .end { display: none !important; }
-  body.video .brandtag { left: 40px; top: 32px; font-size: 32px; gap: 12px; }
-  body.video .brandtag svg { width: 44px; height: 44px; }
+  body.video .brandtag { left: 48px; top: 36px; font-size: 42px; gap: 16px; }
+  body.video .brandtag svg { width: 58px; height: 58px; }
   body.video .app { padding-bottom: 12px; }
   #markerbar { display: none; }
   body.video #markerbar { display: block; position: fixed; left: 0; right: 0; bottom: 0; height: 12px; background: rgb(0,0,0); }
@@ -147,15 +147,15 @@
 (function () {
   var $ = function (s) { return document.querySelector(s); };
   var VIDEO = /[?&]video=1/.test(location.search); if (VIDEO) document.body.classList.add('video');
-  var VB = VIDEO ? '-233 0 1067 600' : '0 0 600 600', BG = VIDEO ? '<rect x="-233" width="1067" height="600" fill="#F4F1EA"/>' : '<rect width="600" height="600" fill="#F4F1EA"/>';
+  var VB = VIDEO ? '-183 28 967 544' : '0 0 600 600', BG = VIDEO ? '<rect x="-233" width="1067" height="600" fill="#F4F1EA"/>' : '<rect width="600" height="600" fill="#F4F1EA"/>';
   var INK = '#0B1A2E', BRAND = '#1F4FE0', SOFT = '#E7EDFC', LINE = '#d8d2c3', GOOD = '#1f8a4c', GOODSOFT = '#dff2e6', MUTED = '#4a5a72', GREY = '#aeb6c6', CORAL = '#FF5A3C', PAPER = '#F4F1EA', DEEP = '#ECE6D6';
 
   var COPY = [
-    { t: 'People just ask AI. It gives them one name.', x: '' },
+    { t: 'People just ask AI.\nIt gives them one name.', x: '' },
     { t: 'AI only has pieces of you.', x: '' },
     { t: 'You could fix it yourself.', x: '' },
     { t: 'Or put yourself on the record.', x: '' },
-    { t: 'The more AI knows you, the more it says your name.', x: '' },
+    { t: 'The more AI knows you,\nthe more it says your name.', x: '' },
     { t: 'Be the name AI says.', x: '' }
   ];
   var CARDS = window.__cards || [3.4, 3.0, 3.0, 3.0, 3.6, 3.0], ANIM = window.__anims || [6.5, 8, 8.5, 10.5, 11, 7.5];
@@ -314,6 +314,7 @@
       '</svg>';
   }
   function wrap(str, max) {
+    if (str.indexOf('\n') >= 0) return str.split('\n');
     var words = str.split(' '), lines = [], cur = '';
     words.forEach(function (w) { if ((cur + ' ' + w).trim().length > max) { lines.push(cur.trim()); cur = w; } else cur += ' ' + w; });
     if (cur.trim()) lines.push(cur.trim());
