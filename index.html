@@ -217,7 +217,7 @@
     var h = Math.ceil(fs * 2.1), rx = Math.min(h / 2, 14), pad = Math.round(fs * 1.1);
     return '<g class="box" data-cx="' + x + '" data-cy="' + y + '" data-pad="' + pad + '" data-text="' + text.replace(/"/g, '&quot;') + '"' + (id ? ' data-typed="1"' : '') + '>' +
       '<rect width="10" height="' + h + '" rx="' + rx + '" fill="' + fill + '"' + (stroke ? ' stroke="' + stroke + '" stroke-width="2.5"' : '') + '/>' +
-      '<text' + (id ? ' id="' + id + '"' : '') + (cls ? ' class="' + cls + '"' : '') + ' x="5" y="' + (h / 2 + fs * 0.34) + '" text-anchor="middle" font-size="' + fs + '" fill="' + color + '">' + text + '</text></g>';
+      '<text' + (id ? ' id="' + id + '"' : '') + (cls ? ' class="' + cls + '"' : '') + ' x="5" y="' + (h / 2 + fs * 0.34) + '" text-anchor="middle" font-size="' + fs + '" fill="' + color + '">' + (id ? '' : text) + '</text></g>';
   }
   function fitBoxes() {
     Array.prototype.forEach.call(document.querySelectorAll('#art .box'), function (g) {
@@ -227,7 +227,7 @@
       var w = Math.ceil(t.getBBox().width * 1.06 + g.getAttribute('data-pad') * 2), h = +r.getAttribute('height');
       r.setAttribute('width', w); t.setAttribute('x', w / 2);
       g.setAttribute('transform', 'translate(' + (g.getAttribute('data-cx') - w / 2) + ' ' + (g.getAttribute('data-cy') - h / 2) + ')');
-      if (g.getAttribute('data-typed')) t.textContent = was === full ? full : was;
+      if (g.getAttribute('data-typed')) t.textContent = was;
     });
   }
 

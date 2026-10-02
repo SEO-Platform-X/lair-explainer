@@ -23,7 +23,21 @@ for i in range(6):
 place("vo/end.wav", starts["end"] + 0.8)
 vo = vo / (np.abs(vo).max() + 1e-9) * 0.85
 sf.write("vo.wav", vo, SR)
-subprocess.run(["python3", "music.py", str(dur)], check=True)
+# real track first (internal use), generated bed as fallback
+import urllib.request
+TRACKS = [
+  "https://assets.mixkit.co/music/preview/mixkit-driving-ambition-32.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3",
+  "https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3",
+]
+got = False
+for u in TRACKS:
+    try:
+        urllib.request.urlretrieve(u, "track.mp3")
+        r = subprocess.run(["ffmpeg", "-y", "-v", "error", "-stream_loop", "3", "-i", "track.mp3", "-t", str(dur), "-af", f"afade=t=in:d=1,afade=t=out:st={max(0, dur - 3)}:d=3", "-ac", "2", "-ar", "44100", "music.wav"])
+        if r.returncode == 0: print("music:", u); got = True; break
+    except Exception as e: print("track failed", u, e)
+if not got: subprocess.run(["python3", "music.py", str(dur)], check=True)
 subprocess.run(["ffmpeg", "-y", "-i", "video.mp4", "-i", "vo.wav", "-i", "music.wav",
-  "-filter_complex", "[2:a]volume=0.42[m];[1:a]volume=1.0[v];[v][m]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]",
+  "-filter_complex", "[2:a]volume=0.30[m];[1:a]volume=1.0[v];[v][m]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]",
   "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", "lair-explainer-1080p-audio.mp4"], check=True)
