@@ -9,6 +9,28 @@ def post(url, body, path):
         print("ERROR", url, e.code, e.read().decode(errors="replace")[:600]); return False
 dur = lambda p: float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", p], capture_output=True, text=True).stdout or 0)
 mode = open("mode.txt").read().strip() if os.path.exists("mode.txt") else "vo"
+
+if mode == "takes":
+    P = json.load(open("script2.json"))
+    voices = json.loads(urllib.request.urlopen(urllib.request.Request("https://api.elevenlabs.io/v1/voices", headers={"xi-api-key": KEY}), timeout=60).read())["voices"]
+    v = next((x for x in voices if x["name"].lower().startswith("jessica")), voices[0]); print("voice", v["name"])
+    import base64
+    for i, (sid, text) in enumerate(P):
+        body = {"text": text, "model_id": "eleven_multilingual_v2",
+                "previous_text": " ".join(t for _, t in P[max(0, i - 2):i]) or None,
+                "next_text": " ".join(t for _, t in P[i + 1:i + 2]) or None,
+                "voice_settings": {"stability": 0.42, "similarity_boost": 0.8, "style": 0.45, "use_speaker_boost": True}}
+        body = {k: x for k, x in body.items() if x is not None}
+        r = urllib.request.Request("https://api.elevenlabs.io/v1/text-to-speech/" + v["voice_id"] + "/with-timestamps?output_format=mp3_44100_128",
+            data=json.dumps(body).encode(), headers={"xi-api-key": KEY, "Content-Type": "application/json"})
+        try:
+            res = json.loads(urllib.request.urlopen(r, timeout=300).read())
+        except urllib.error.HTTPError as e:
+            print("ERROR", e.code, e.read().decode(errors="replace")[:500]); continue
+        open(f"out/t{i:02d}-{sid}.mp3", "wb").write(base64.b64decode(res["audio_base64"]))
+        json.dump({"scene": sid, "text": text, "alignment": res.get("alignment")}, open(f"out/t{i:02d}-{sid}.json", "w"))
+        print(sid, "ok")
+    raise SystemExit
 if mode == "vo":
     P = json.load(open("phrases.json"))
     voices = json.loads(urllib.request.urlopen(urllib.request.Request("https://api.elevenlabs.io/v1/voices", headers={"xi-api-key": KEY}), timeout=60).read())["voices"]
