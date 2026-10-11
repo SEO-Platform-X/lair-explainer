@@ -15,7 +15,9 @@ if mode == "takes":
     voices = json.loads(urllib.request.urlopen(urllib.request.Request("https://api.elevenlabs.io/v1/voices", headers={"xi-api-key": KEY}), timeout=60).read())["voices"]
     v = next((x for x in voices if x["name"].lower().startswith("jessica")), voices[0]); print("voice", v["name"])
     import base64
+    ONLY = json.load(open("only.json")) if os.path.exists("only.json") else None
     for i, (sid, text) in enumerate(P):
+        if ONLY and sid not in ONLY: continue
         body = {"text": text, "model_id": "eleven_multilingual_v2",
                 "previous_text": " ".join(t for _, t in P[max(0, i - 2):i]) or None,
                 "next_text": " ".join(t for _, t in P[i + 1:i + 2]) or None,
