@@ -1,0 +1,19 @@
+name: Medspa VO
+on: { push: { branches: [medspa-vo] }, workflow_dispatch: {} }
+permissions: { contents: write }
+jobs:
+  vo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: python3 medspa_vo.py
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: medspa-vo-${{ github.run_number }}
+          name: Med spa explainer VO ${{ github.run_number }}
+          prerelease: true
+          target_commitish: medspa-vo
+          files: out/*
