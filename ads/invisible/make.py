@@ -12,14 +12,13 @@ LINES = [
 
 def sh(c): return subprocess.run(c, shell=True, check=True, capture_output=True, text=True)
 
-urllib.request.urlretrieve(VIDEO_URL, "src.mp4")
+urllib.request.urlretrieve(VIDEO_URL, "stitched.mp4")
+urllib.request.urlretrieve(open("ads/invisible/couch_url.txt").read().strip(), "couch.mp4")
+# final cut: couch shot (4s) + stitched video from 8s (fade, lights out, restore, client walks in)
+sh('ffmpeg -y -i couch.mp4 -ss 8 -i stitched.mp4 -filter_complex "[0:v]fps=24,setsar=1[a];[1:v]fps=24,setsar=1[b];[a][b]concat=n=2:v=1:a=0[v]" -map "[v]" -c:v libx264 -crf 16 -preset slow -pix_fmt yuv420p src.mp4')
 dur = float(sh("ffprobe -v error -show_entries format=duration -of csv=p=0 src.mp4").stdout)
-info = subprocess.run("ffmpeg -i src.mp4 -vf \"select='gt(scene,0.25)',showinfo\" -f null -", shell=True, capture_output=True, text=True).stderr
-cuts = sorted(set(round(float(t), 2) for t in re.findall(r"pts_time:([\d.]+)", info)))
-print("duration", dur, "detected cuts", cuts)
-if len(cuts) < 4:
-    cuts = [dur * f for f in (4/30, 10/30, 16/30, 24/30)]
-    print("fallback cuts", cuts)
+cuts = [4, 10, 16, 24]
+print("duration", dur, "cuts", cuts)
 anchors = [0.4, cuts[0] + 0.6, cuts[2] + 0.8, cuts[3] + 1.0]
 
 clips, t_end = [], 0
