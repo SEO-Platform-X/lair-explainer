@@ -1,0 +1,27 @@
+name: Invisible ad mix
+on: { workflow_dispatch: {}, push: { branches: [ad-invisible] } }
+permissions: { contents: write }
+jobs:
+  mix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg && pip install faster-whisper
+      - run: mkdir -p fonts && curl -sL -o fonts/Bricolage.ttf "https://github.com/google/fonts/raw/main/ofl/bricolagegrotesque/BricolageGrotesque%5Bopsz%2Cwdth%2Cwght%5D.ttf" && ls -la fonts
+      - run: python ads/invisible/make.py | tee mix.log
+        env: { ELEVENLABS_API_KEY: "${{ secrets.ELEVENLABS_API_KEY }}" }
+      - run: python -c "from faster_whisper import WhisperModel as W; s,_=W('base.en',device='cpu',compute_type='int8').transcribe('lair-invisible-voiceover.mp4'); [print(f'{x.start:.1f}-{x.end:.1f} {x.text}') for x in s]" | tee transcript.txt
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: invisible-ad-${{ github.run_number }}
+          name: Invisible ad build ${{ github.run_number }}
+          prerelease: true
+          files: |
+            lair-invisible-captions.mp4
+            lair-invisible-voiceover.mp4
+            contact-sheet.png
+            transcript.txt
+            timing.json
+            mix.log
