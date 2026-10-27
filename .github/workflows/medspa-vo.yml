@@ -1,5 +1,5 @@
 name: Medspa VO
-on: { push: { branches: [medspa-vo] }, workflow_dispatch: {} }
+on: { push: { branches: [medspa-vo, ps-vo] }, workflow_dispatch: {} }
 permissions: { contents: write }
 jobs:
   vo:
@@ -12,8 +12,8 @@ jobs:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: medspa-vo-${{ github.run_number }}
+          tag_name: ${{ github.ref_name }}-${{ github.run_number }}
           name: Med spa explainer VO ${{ github.run_number }}
           prerelease: true
-          target_commitish: medspa-vo
+          target_commitish: ${{ github.ref_name }}
           files: out/*

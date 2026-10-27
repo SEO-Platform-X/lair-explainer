@@ -38,7 +38,9 @@ if mode == "vo":
     voices = json.loads(urllib.request.urlopen(urllib.request.Request("https://api.elevenlabs.io/v1/voices", headers={"xi-api-key": KEY}), timeout=60).read())["voices"]
     v = next((x for x in voices if x["name"].lower().startswith("jessica")), voices[0]); print("voice", v["name"])
     info = []
+    ONLYP = json.load(open("only_p.json")) if os.path.exists("only_p.json") else None
     for i, (sid, beat, text) in enumerate(P):
+        if ONLYP is not None and i not in ONLYP: continue
         p = f"out/p{i:02d}.mp3"
         ok = post("https://api.elevenlabs.io/v1/text-to-speech/" + v["voice_id"] + "?output_format=mp3_44100_128",
                   {"text": text, "model_id": "eleven_multilingual_v2",

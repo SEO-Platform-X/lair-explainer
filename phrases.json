@@ -1,5 +1,5 @@
 [
- ["ask", 0.0, "So. Your next patient wants Botox."],
+ ["ask", 0.0, "So. Your next patient wants a facelift."],
  ["ask", 0.15, "Does she ask a friend?"],
  ["ask", 0.22, "Nope."],
  ["ask", 0.3, "She asks AI."],
