@@ -1,12 +1,12 @@
 [
- ["ask", "Friday night. Your next customer wants a pre-roll. Does she drive around looking? Nope. She asks AI."],
+ ["ask", "Friday night. Your next customer wants to pick something up for the weekend. Does he drive around looking? Nope. He asks AI."],
  ["answer", "AI names two stores. Good stores. Just... not yours."],
  ["ads", "And you can't buy your way in. Google and Meta won't run your ads."],
  ["few", "Here's the tricky part. Google shows about a third of local businesses. ChatGPT? About one in a hundred."],
  ["switch", "And half of cannabis shoppers would switch stores for a better deal. Loyalty is up for grabs."],
- ["scattered", "AI checks everywhere. Google. Weedmaps. Leafly. Your reviews. And if one says you're closed? AI says... try somewhere else."],
+ ["scattered", "AI checks everywhere. Google. Your website. Your reviews. Every directory. And if one says you're closed? AI says... try somewhere else."],
  ["record", "That's where we come in. Tell us your store, hours, menu and license once. We make every source say the same thing. Every month."],
- ["approve", "Your budtenders stay on the floor. You just tap approve."],
- ["named", "So next Friday, when she asks... guess who AI picks?"],
+ ["approve", "Your staff stays on the floor. You just tap approve."],
+ ["named", "So next Friday, when he asks... guess who AI picks?"],
  ["end", "You. Local AI Registry. Be the name AI says. Get started for free."]
 ]
