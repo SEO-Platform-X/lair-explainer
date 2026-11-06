@@ -1,42 +1,12 @@
 [
-  [
-    "ask",
-    "So, your next patient needs cataract surgery. She used to ask a friend... Now? She asks AI."
-  ],
-  [
-    "answer",
-    "And AI gives her a few names. Great names! Just... not yours."
-  ],
-  [
-    "shift",
-    "And she's not the only one. A year ago, about six percent of people asked AI. Now? It's forty-five."
-  ],
-  [
-    "few",
-    "Here's the catch. Google shows a whole page of businesses. But AI? It names about one in a hundred."
-  ],
-  [
-    "before",
-    "It used to be easy. Someone searched, clicked, and landed on your website. Done."
-  ],
-  [
-    "scattered",
-    "But now, AI reads about you everywhere. Google, online gossip, your reviews, all those directories... and if they don't agree? AI gets nervous, and sends her somewhere else."
-  ],
-  [
-    "record",
-    "That's where we come in. You tell us your facts once, and we make sure every one of those places says the same thing. Every single month."
-  ],
-  [
-    "approve",
-    "And you barely lift a finger. Actually... just one finger. Just tap approve."
-  ],
-  [
-    "named",
-    "So next time she asks... guess who AI picks?"
-  ],
-  [
-    "end",
-    "You. Local AI Registry. Be the name AI says. Get started for free."
-  ]
+ ["ask", "Friday night. Your next customer wants a pre-roll. Does she drive around looking? Nope. She asks AI."],
+ ["answer", "AI names two stores. Good stores. Just... not yours."],
+ ["ads", "And you can't buy your way in. Google and Meta won't run your ads."],
+ ["few", "Here's the tricky part. Google shows about a third of local businesses. ChatGPT? About one in a hundred."],
+ ["switch", "And half of cannabis shoppers would switch stores for a better deal. Loyalty is up for grabs."],
+ ["scattered", "AI checks everywhere. Google. Weedmaps. Leafly. Your reviews. And if one says you're closed? AI says... try somewhere else."],
+ ["record", "That's where we come in. Tell us your store, hours, menu and license once. We make every source say the same thing. Every month."],
+ ["approve", "Your budtenders stay on the floor. You just tap approve."],
+ ["named", "So next Friday, when she asks... guess who AI picks?"],
+ ["end", "You. Local AI Registry. Be the name AI says. Get started for free."]
 ]
