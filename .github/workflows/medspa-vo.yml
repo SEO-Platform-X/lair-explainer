@@ -6,7 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - if: github.ref_name != 'disp-vo'
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - run: python3 ${{ github.ref_name == 'disp-vo' && 'disp_vo.py' || 'medspa_vo.py' }}
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
