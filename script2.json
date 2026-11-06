@@ -1,42 +1,12 @@
 [
- [
-  "ask",
-  "Friday night. Your next customer wants to grab some weed for the weekend. Does he drive around looking? Nope. He asks AI."
- ],
- [
-  "answer",
-  "AI names two stores. Good stores. Just... not yours."
- ],
- [
-  "ads",
-  "And you can't buy your way in. Google and Meta won't run your ads."
- ],
- [
-  "few",
-  "Here's the tricky part. Google shows about a third of local businesses. ChatGPT? About one in a hundred."
- ],
- [
-  "switch",
-  "And half of cannabis shoppers would switch stores for a better deal. Loyalty is up for grabs."
- ],
- [
-  "scattered",
-  "AI checks everywhere. Google. Your website. Your reviews. Every directory. And if one says you're closed? AI says... try somewhere else."
- ],
- [
-  "record",
-  "That's where we come in. Tell us your store, hours, menu and license once. We make every source say the same thing. Every month."
- ],
- [
-  "approve",
-  "Your staff stays on the floor. You just tap approve."
- ],
- [
-  "named",
-  "So next Friday, when he asks... guess who AI picks?"
- ],
- [
-  "end",
-  "You. Local AI Registry. Be the name AI says. Get started for free."
- ]
+ ["ask", "So here's something most dispensary owners don't realize. When people want to find a dispensary nearby, a lot of them don't search Google anymore. They just ask ChatGPT."],
+ ["answer", "And ChatGPT gives them two or three stores. If yours isn't one of them, that customer goes somewhere else."],
+ ["ads", "And you can't really buy your way in, because Google and Meta won't run cannabis ads."],
+ ["few", "Google shows about a third of local businesses, but ChatGPT only names about one in a hundred."],
+ ["switch", "And since about half of cannabis shoppers are happy to switch stores for a better deal, every one of those answers matters."],
+ ["scattered", "The way AI decides is pretty simple. It checks your Google listing, your menu, your reviews and your website, and if any of them disagree, like showing the wrong hours, it just recommends someone else."],
+ ["record", "That's what we fix. You tell us your store details once, your hours, menu and license, and we keep every one of those places accurate and matching, every month."],
+ ["approve", "We do the work, and you just look it over and approve it from your phone."],
+ ["named", "So the next time someone asks for a dispensary near them, it's your store that comes up."],
+ ["end", "Local AI Registry. Be the name AI says. Get started for free."]
 ]
